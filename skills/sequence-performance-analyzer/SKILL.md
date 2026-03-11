@@ -168,3 +168,4 @@ For teams with very high or very low baseline performance, adjust thresholds rel
 | Rate limiting on multiple queries | Space out `ask_analytics` calls by a few seconds if you hit rate limits. Submit reply rate and emails sent first, as these are the most important metrics for sequence evaluation. |
 | User asks about step-level performance | Submit a follow-up question to `mcp__claude_ai_Amplemarket__ask_analytics`: "What is the reply rate by step for sequence [name] in the last [timeframe]?" The analytics engine may support step-level breakdowns. |
 | Bounce rate data not available | Open rate can serve as a proxy signal for deliverability. Very low open rates (below 20%) may indicate spam folder placement even if bounce data is missing. Note this in the report. |
+

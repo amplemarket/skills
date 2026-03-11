@@ -162,3 +162,4 @@ Gap identified: No IT/Security stakeholder found at Director+ level.
 | Company enrichment succeeds but `search_people` finds no decision makers | Try broadening seniority to include "Manager" and "Senior". Also try searching by company name instead of domain, as some companies have multiple domains. |
 | Engagement history data seems stale | Flag with: "[Data may be stale, last updated DATE]. This may not reflect recent off-platform interactions." Then suggest: "Want me to re-enrich this account for the latest data?" |
 | `search_companies` returns 0 for a company that definitely exists | Fallback chain: 1) Try `enrich_company` with the domain directly. 2) Try the LinkedIn company URL. 3) Try alternate or parent company domains. Some companies are indexed by domain but not searchable by name. |
+

@@ -141,3 +141,4 @@ Tell the user: "I'm using default health scoring for a mid-market sales cycle. W
 | User wants to take action on a specific account | Pivot to the competitive-account-research skill for a deep dive, or build-targeted-lead-list to add missing stakeholders. |
 | Engagement history data seems stale | Flag with: "[Data may be stale - last activity DATE]. This may not reflect recent interactions outside Amplemarket." Then suggest: "Want me to re-enrich this account's contacts for the latest signals?" |
 | Person enrichment succeeds but company enrichment fails for a pipeline account | Fallback chain: 1) Use account-level data from `get_account` as the primary source. 2) Try `enrich_company` with domain instead of name. 3) Try the LinkedIn company URL. 4) Score based on internal engagement data and flag: "Company enrichment unavailable - scoring based on internal data only." |
+

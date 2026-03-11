@@ -235,3 +235,4 @@ Summary: 5 deals in Negotiation | 2 single-threaded (CRITICAL) | Average contact
 | Too many deals to analyze | Offer to prioritize: "I found X open deals. Shall I focus on the top 10 by deal value, or would you prefer a specific stage?" Limit `search_people` calls to the top 10 deals to manage credits. |
 | Contact appears on multiple deals | This is common. One person may be the champion on several deals at the same company. Map them to the appropriate role on each deal independently. Note the overlap: "David Kim is the champion on 3 Acme Corp deals." |
 | Role mapping is ambiguous | Present ambiguous mappings with a note: "David Kim (Director of Business Operations), mapped as End User/Operator. Could also be Champion. Please confirm." Let the user override the mapping. |
+

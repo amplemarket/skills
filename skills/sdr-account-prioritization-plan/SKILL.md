@@ -52,3 +52,4 @@ When an SDR wants to plan their account work, pull account data, enrich with ext
 | Problem | Solution |
 |---|---|
 | Too many accounts | Prioritize the top 5-10 based on signal strength. Offer to plan the rest in a follow-up. |
+

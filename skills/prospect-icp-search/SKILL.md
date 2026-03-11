@@ -115,3 +115,4 @@ Would you like me to:
 | Unexpected titles in results | Use `person_seniorities` and `person_departments` in addition to `person_titles` to improve precision. |
 | Company definitely exists but `search_companies` returns 0 | Fallback chain: 1) Try `enrich_company` with the company domain directly. 2) Try searching by partial name. 3) Check for parent/subsidiary company names. 4) Try the company's LinkedIn URL in `enrich_company`. |
 | Multiple people match a specific name | Use additional filters like `person_locations` or `company_domains` to narrow results. If still ambiguous, present matches and ask the user to confirm. |
+

@@ -246,3 +246,4 @@ Shall I create a lead list from all 31 decision-makers, or would you like to foc
 | Signal data appears outdated despite recent timeframe | Web search results may include older content that was recently re-indexed. Verify dates by checking the source article directly via WebFetch. Discard signals with confirmed dates outside the requested timeframe. |
 | Duplicate companies across signal types | This is expected and valuable. Companies with multiple signals represent stronger buying opportunities. Deduplicate before enrichment but preserve all signal types in the final output. Flag multi-signal companies: "Double trigger: [Company] appears in both [Signal A] and [Signal B]." |
 | User wants to monitor signals regularly | This skill runs on demand. Suggest the user run it weekly or daily with the "last 7 days" timeframe for ongoing monitoring. Recommend saving each run's results as a dated lead list for tracking over time. |
+

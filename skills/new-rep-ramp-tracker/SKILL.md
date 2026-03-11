@@ -41,3 +41,4 @@ When a manager wants to check how a new rep is ramping, query analytics for the 
 | Problem | Solution |
 |---|---|
 | Team benchmark data for "same tenure" not available | Compare to team's current averages instead, noting the rep is new and expected to be below average. |
+

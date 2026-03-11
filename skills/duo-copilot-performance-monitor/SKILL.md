@@ -215,3 +215,4 @@ Cross-team comparison is not included in individual reports. If asked in a threa
 | Dismiss reasons skew heavily toward "Other" | Note in the report: "72% of dismisses are categorized as 'Other'. Reps may not be selecting specific dismiss reasons. Encourage reps to choose Bad lead, Bad company, or Bad signal for better diagnostics." |
 | Prior week data not available (first run) | Skip the week-over-week comparison columns for activity metrics. Note: "First report -- weekly comparisons will begin next week." The 30-day rolling window for outcomes should still have data. |
 | Too many reps to fit in the leaderboard | Show the top 10 and bottom 3. Summarize the middle: "12 additional reps actioned between 15-30 leads each." |
+

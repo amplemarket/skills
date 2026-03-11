@@ -153,3 +153,4 @@ Tell the user: "I'm using default ICP scoring weights. Want me to adjust for you
 | Email not revealed | The contact may not have a verified business email. Suggest LinkedIn outreach instead. |
 | Low data completeness | Combine multiple identifiers in the enrichment call for better match rates. If email is missing, suggest LinkedIn outreach. If phone is missing, note it in the profile and suggest email as primary channel. Always score with available data and flag which factors were impacted by missing data. |
 | Score seems off | Ask the user to define their specific ICP criteria so scoring weights can be adjusted. |
+

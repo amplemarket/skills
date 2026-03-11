@@ -171,3 +171,4 @@ Adjust these benchmarks based on the user's industry and selling motion. Enterpr
 | Rate limiting on multiple queries | If you receive rate limit errors, space out the `ask_analytics` calls by a few seconds each. Submit the most important questions first (reply rate, emails sent) so you have core data even if later queries fail. |
 | User asks for metrics not covered here | The analytics engine accepts natural language questions. Submit the user's exact question to `mcp__claude_ai_Amplemarket__ask_analytics` and see if it can answer. For example, "What is the click rate by rep?" may work even though it is not in the default set. |
 | Very large team (20+ reps) | Offer to split the review into groups. "You have 25 reps. Want me to review the top 10 by volume first, then the rest?" This keeps the output manageable and the analytics queries focused. |
+

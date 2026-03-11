@@ -301,3 +301,4 @@ The following fields are generated with every brief. Use them in email templates
 | `{{brief_question_2}}` | "What's your biggest challenge scaling demand gen now?" | Analysis |
 | `{{brief_landmine}}` | "Avoid mentioning recent layoffs in engineering (Jan 2026)" | WebSearch |
 | `{{brief_followup_opener}}` | "Great speaking today. Following up on the analytics discussion" | Analysis |
+
