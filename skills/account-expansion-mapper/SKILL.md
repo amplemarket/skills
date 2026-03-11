@@ -7,7 +7,7 @@ description: >
   existing customer accounts.
 metadata:
   author: amplemarket
-  version: "1.0.0"
+  version: "1.0.1"
 compatibility: Requires Amplemarket MCP server
 ---
 

@@ -4,7 +4,7 @@ description: >
   Compare your sales reps side by side on outreach volume, engagement rates, and meetings booked to identify top performers and coaching opportunities.
 metadata:
   author: amplemarket
-  version: "1.0.0"
+  version: "1.0.1"
 compatibility: Requires Amplemarket MCP server
 ---
 

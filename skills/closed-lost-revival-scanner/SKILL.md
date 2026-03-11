@@ -4,7 +4,7 @@ description: >
   Scan closed-lost HubSpot deals, research trigger events that occurred since the loss date, score revival potential, and generate re-engagement outreach for the highest-potential opportunities.
 metadata:
   author: amplemarket
-  version: "1.0.0"
+  version: "1.0.1"
 compatibility: Requires Amplemarket MCP server
 ---
 
