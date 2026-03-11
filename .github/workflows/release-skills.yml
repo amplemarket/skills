@@ -73,7 +73,7 @@ jobs:
             fi
 
             # Create zip
-            zip_file="${skill_name}.zip"
+            zip_file="${skill_name}-v${version}.zip"
             (cd "$skill_dir" && zip -r "../../${zip_file}" .)
 
             # Create release
