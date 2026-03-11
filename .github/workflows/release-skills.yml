@@ -1,0 +1,88 @@
+name: Release Skills
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  detect-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed skills
+        id: changes
+        run: |
+          # Get changed files between this commit and its parent
+          changed_dirs=$(git diff --name-only HEAD~1 HEAD \
+            | grep '/SKILL.md$' \
+            | xargs -I{} dirname {} \
+            | sort -u)
+
+          if [ -z "$changed_dirs" ]; then
+            echo "No skill changes detected."
+            echo "skills=" >> "$GITHUB_OUTPUT"
+          else
+            echo "Changed skills:"
+            echo "$changed_dirs"
+            # Output as JSON array for matrix
+            json=$(echo "$changed_dirs" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "skills=$json" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Release changed skills
+        if: steps.changes.outputs.skills != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          skills='${{ steps.changes.outputs.skills }}'
+
+          echo "$skills" | jq -r '.[]' | while read -r skill_dir; do
+            skill_name=$(basename "$skill_dir")
+            skill_md="$skill_dir/SKILL.md"
+
+            if [ ! -f "$skill_md" ]; then
+              echo "Skipping $skill_name: SKILL.md not found"
+              continue
+            fi
+
+            # Extract version from frontmatter
+            version=$(sed -n '/^---$/,/^---$/p' "$skill_md" \
+              | grep -E '^\s*version:' \
+              | head -1 \
+              | sed 's/.*version:\s*["'\'']\?\([^"'\'']*\)["'\'']\?.*/\1/')
+
+            if [ -z "$version" ]; then
+              echo "Skipping $skill_name: no version found in frontmatter"
+              continue
+            fi
+
+            tag="${skill_name}-v${version}"
+            echo "Processing $skill_name @ v$version (tag: $tag)"
+
+            # Check if this release already exists
+            if gh release view "$tag" > /dev/null 2>&1; then
+              echo "Release $tag already exists, skipping."
+              continue
+            fi
+
+            # Create zip
+            zip_file="${skill_name}.zip"
+            (cd "$skill_dir" && zip -r "../../${zip_file}" .)
+
+            # Create release
+            gh release create "$tag" \
+              --title "${skill_name} v${version}" \
+              --notes "Release of **${skill_name}** skill v${version}." \
+              --latest=false \
+              "$zip_file"
+
+            echo "Released $tag"
+            rm -f "$zip_file"
+          done
