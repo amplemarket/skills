@@ -43,3 +43,4 @@ When a manager wants coaching notes on a specific rep, query analytics for that 
 | Problem | Solution |
 |---|---|
 | Rep name is ambiguous | Ask for the rep's email to match exactly in analytics queries. |
+

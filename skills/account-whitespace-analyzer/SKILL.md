@@ -262,3 +262,4 @@ Each lead includes expansion context and internal champion details.
 | Account is already fully covered | This is a positive finding. Note: "Acme Corp has contacts in all target departments. Consider deepening engagement at existing contacts rather than expanding horizontally. Look for upsell or upgrade opportunities within current departments." |
 | User's product does not clearly map to the whitespace department | Ask for clarification: "How would [your product] benefit the [Department] team? I want to make sure the expansion rationale is compelling." Without a clear connection, whitespace outreach will feel forced. |
 | WebSearch finds no account-specific expansion signals | Use general industry trends instead: "No specific expansion signals found for Acme Corp's marketing team, but [industry] companies are broadly investing in demand gen and ABM, which may resonate." |
+

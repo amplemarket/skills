@@ -42,3 +42,4 @@ When an AE wants to review their accounts or deals, pull account data, engagemen
 | Problem | Solution |
 |---|---|
 | Too many accounts | Focus on accounts with open opportunities or recent engagement first. Offer to review the rest separately. |
+

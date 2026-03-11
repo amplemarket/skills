@@ -212,3 +212,4 @@ Summary: 6 deals stuck in proposal stage | $430K total value
 | Owner ID cannot be resolved | If `mcp__claude_ai_HubSpot__search_owners` returns no results for an owner ID, display the raw ID and note: "Owner could not be resolved. This may be a deactivated user or an integration-created record." |
 | WebSearch returns no company news | This is common for smaller or private companies. Set `{{deal_company_recent_news}}` to "No recent public news found" and use a generic revival opener based on the deal context instead. Suggest the user check the company's LinkedIn page for recent posts. |
 | Deal has no associated contacts | Flag the deal separately: "This deal has no contacts in HubSpot. It cannot be revived without a contact. Consider adding a contact manually or searching for decision-makers via Amplemarket." |
+

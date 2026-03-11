@@ -138,3 +138,4 @@ Your list is now being enriched. You can check its status anytime.
 | Enrichment not working | Check that the `options` object is correctly structured with boolean values for `enrich`, `validate_email`, and `reveal_phone_numbers`. |
 | `search_companies` returns 0 results for a known company | Fallback chain: 1) Try searching by company domain instead of name. 2) Try `enrich_company` with the domain directly, as some companies are enrichable but not searchable by name. 3) Try parent company domain or alternate domains. |
 | Search returns results but list creation fails | Verify that the leads array format matches the list type. LinkedIn lists need `linkedin_url`, email lists need `email`. |
+

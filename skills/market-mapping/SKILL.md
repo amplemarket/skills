@@ -178,3 +178,4 @@ Key buyers at representative companies:
 | Market map is too large to display | Summarize with counts and top companies per segment. Offer to export or create lead lists per segment. |
 | `search_companies` returns 0 for a known market | Step 1: Try broader or related industry values by calling `get_industries` and presenting the closest 3-5 options. Step 2: Try searching by company domain if you know specific players. Step 3: Try removing all filters except geography and re-adding one at a time to identify which filter is too restrictive. |
 | No buyers found at mapped companies | Focus buyer mapping on companies with 50+ employees. For smaller companies, use `enrich_person` with founder names + company domain as a fallback. If `search_people` returns 0 for a company that exists, try searching by company name instead of domain. |
+

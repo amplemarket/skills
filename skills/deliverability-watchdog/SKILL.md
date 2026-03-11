@@ -43,3 +43,4 @@ When invoked (on-demand or recurring), query analytics for deliverability metric
 | Problem | Solution |
 |---|---|
 | Spam rate data not available | Fall back to bounce rate and open rate as proxy signals. Low open rate + high bounce often correlates with deliverability issues. |
+

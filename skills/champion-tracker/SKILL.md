@@ -233,3 +233,4 @@ Each lead includes deal context and suggested opener in the lead list notes. Rea
 | New company does not match ICP | Still include in the report but mark ICP fit as "Weak" or "No Fit." The champion relationship is valuable even if the company is not ideal, as they may refer you to others or move again to a better-fit company. |
 | WebSearch returns no news about the new company | Set `{{champion_new_company_news}}` to "No recent public news found." Use the company enrichment data and the champion's role change as the primary outreach angle instead. |
 | Deal context is unclear from HubSpot data | If the deal record lacks context about what was sold or accomplished, ask the user: "Can you share what you accomplished with [Champion] at [Previous Company]? This context makes the re-engagement much more effective." |
+

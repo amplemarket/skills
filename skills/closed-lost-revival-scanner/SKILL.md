@@ -219,3 +219,4 @@ Summary: 7 deals | $645K total lost | 2 high-priority revival targets
 | Too many closed-lost deals to research | Prioritize by deal amount and recency. Offer to batch: "I found X closed-lost deals. Shall I research the top 15 by value first?" Focus enrichment and WebSearch credits on the highest-value opportunities. |
 | Deal owner is no longer at the company | If the owner has left, the deal may be unassigned. Note this in the output and suggest the user's manager reassign the deal before re-engagement. Use `mcp__claude_ai_HubSpot__search_owners` to verify owner status. |
 | Company enrichment returns very different data | The company may have undergone significant changes (acquisition, rebrand, pivot). This is actually a positive signal. Document the changes in `{{revival_company_change}}` and use them as conversation starters in the revival outreach. |
+

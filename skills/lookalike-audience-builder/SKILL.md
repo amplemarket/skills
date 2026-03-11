@@ -235,3 +235,4 @@ Found 210 total lookalike matches. Showing page 1 of 11.
 | Match reasoning feels generic | Ensure you are comparing specific attribute values, not just categories. Reference exact titles, company sizes, and industries rather than saying "similar profile." |
 | Seed company exists but `enrich_company` returns sparse data | Fallback chain: 1) Try the company LinkedIn URL. 2) Try `mcp__claude_ai_Amplemarket__search_companies` with the domain. 3) Use whatever partial data is available and note gaps to the user. |
 | WebFetch returns blocked or empty page | Some sites block automated fetches. Ask the user to paste the customer list manually, or try an alternate URL on the same domain (e.g., /about, /case-studies). |
+

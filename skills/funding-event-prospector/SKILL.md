@@ -242,3 +242,4 @@ Would you like me to create a lead list? I can segment by industry or create one
 | Duplicate companies across search results | Deduplicate by company domain before enriching. If two articles reference the same company's round, merge the details and keep the most recent or most detailed article as the source URL. |
 | Funding article is about a company update, not an actual round | Verify each article by checking for specific funding indicators: round type, dollar amount, investor names, and funding date. Discard articles that mention funding only in passing or reference historical rounds. |
 | Too many results consuming excessive credits | Prioritize by: 1) Recency (most recent funding first). 2) ICP fit (filter companies before enriching people). 3) Offer tiered enrichment: "I found 40 prospects. Want me to enrich the top 10 first, then continue if the quality looks good?" |
+

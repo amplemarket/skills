@@ -136,3 +136,4 @@ Opening line: "Fellow Wharton alum here. Saw you are leading marketing at CloudM
 | Person enrichment succeeds but company enrichment fails | Fallback chain: 1) Try `enrich_company` with domain instead of name. 2) Try LinkedIn company URL. 3) Use person-level data for role-based and career trajectory angles, and note: "Company data unavailable. Angles focus on the prospect's career and role." |
 | Multiple people match the same name + company | Present all matches with titles and LinkedIn URLs. Ask the user to confirm before generating angles. Never generate personalization for the wrong person. |
 | Company exists but `search_companies` returns 0 results | Fallback chain: 1) Try `enrich_company` with domain directly. 2) Try the LinkedIn company URL. 3) Try parent company domain. Some companies are enrichable by domain but not searchable by name. |
+

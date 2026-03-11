@@ -171,3 +171,4 @@ When a user wants to see outreach activity, query the Amplemarket analytics engi
 | Rate limiting on multiple queries | Space out `ask_analytics` calls by a few seconds if rate limits are hit. Prioritize total volume and reply rate queries, as these are the most important for an activity dashboard. |
 | Data seems inconsistent (e.g., reply rate higher than open rate) | Flag the inconsistency to the user. This can happen if the analytics engine counts unique opens differently from total opens, or if reply tracking differs from open tracking. Present the data as-is and note: "Reply rate appears higher than open rate, which may indicate different counting methodologies." |
 | User wants real-time data | Analytics queries reflect processed data, which may have a delay of a few hours. Inform the user: "Analytics data may lag by a few hours. For today's activity, results will be most accurate tomorrow." |
+
