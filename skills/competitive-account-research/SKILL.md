@@ -4,7 +4,7 @@ description: >
   Generate a comprehensive account brief by combining company enrichment, decision-maker mapping, and engagement history from Amplemarket.
 metadata:
   author: amplemarket
-  version: "1.0.0"
+  version: "1.0.1"
 compatibility: Requires Amplemarket MCP server
 ---
 
