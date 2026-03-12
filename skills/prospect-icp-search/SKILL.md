@@ -4,7 +4,7 @@ description: >
   Search for prospects matching an Ideal Customer Profile using natural language. This skill translates human-friendly buyer descriptions into structured Amplemarket API queries and returns formatted results.
 metadata:
   author: amplemarket
-  version: "1.0.1"
+  version: "1.0.2"
 compatibility: Requires Amplemarket MCP server
 ---
 
