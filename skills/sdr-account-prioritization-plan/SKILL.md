@@ -4,7 +4,7 @@ description: >
   Help SDRs figure out which accounts to focus on and how to break into them -- combining internal engagement data with external signals to prioritize accounts and plan next moves.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
 

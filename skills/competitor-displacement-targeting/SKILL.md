@@ -4,7 +4,7 @@ description: >
   Find companies using a competitor's product across multiple evidence vectors and target decision-makers for rip-and-replace campaigns.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
 

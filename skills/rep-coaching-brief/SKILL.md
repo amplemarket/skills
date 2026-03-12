@@ -4,7 +4,7 @@ description: >
   Generate coaching notes for a manager preparing a 1:1 with a rep, covering activity, engagement quality, conversion efficiency, and areas for improvement.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
 

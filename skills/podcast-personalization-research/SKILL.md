@@ -4,7 +4,7 @@ description: >
   Research a prospect's podcast appearances and generate deep personalization angles with specific quotes, topics, and draft openers for outreach.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
 

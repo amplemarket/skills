@@ -4,7 +4,7 @@ description: >
   Find companies hiring for roles that signal product need, then enrich and identify decision-makers to target.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
 
