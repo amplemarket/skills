@@ -1,17 +1,14 @@
 ---
 name: account-expansion-mapper
 description: >
-  Map untapped departments and roles within existing accounts to surface expansion
-  opportunities, then find contacts in whitespace areas with personalization that
-  references your existing relationship. Use when expanding into new departments at
-  existing customer accounts.
+  Map untapped departments and roles within existing accounts to surface
+  expansion opportunities, then find contacts in whitespace areas with
+  personalization that references your existing relationship.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
-
-# account-expansion-mapper
 
 # Account Expansion Mapper
 

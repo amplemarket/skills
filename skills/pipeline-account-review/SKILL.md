@@ -4,11 +4,9 @@ description: >
   Audit pipeline accounts by analyzing engagement data, mapping stakeholders, identifying gaps, and prioritizing next actions.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
-
-# pipeline-account-review
 
 # Pipeline Account Review
 

@@ -4,11 +4,12 @@ description: >
   Monitor email deliverability health and flag mailboxes or domains showing signs of spam or bounce issues before they damage sender reputation.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
 
-# deliverability-watchdog
+
+# Deliverability Watchdog
 
 Monitor email deliverability health and flag mailboxes or domains showing signs of spam or bounce issues before they damage sender reputation.
 

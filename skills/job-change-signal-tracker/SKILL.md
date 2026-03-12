@@ -4,11 +4,9 @@ description: >
   Track job changes for key contacts, research their new companies, and generate warm re-engagement outreach based on your prior relationship.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
-
-# job-change-signal-tracker
 
 # Job Change Signal Tracker
 

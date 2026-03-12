@@ -4,11 +4,12 @@ description: >
   Help admins understand what's driving their Duo dismiss rate by analyzing dismiss patterns across reasons, signals, lead attributes, and rep behavior.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
 
-# duo-copilot-dismiss-diagnostics
+
+# Duo Copilot Dismiss Diagnostics
 
 Help admins understand what's driving their Duo dismiss rate by analyzing dismiss patterns across reasons, signals, lead attributes, and rep behavior.
 

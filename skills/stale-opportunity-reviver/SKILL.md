@@ -4,11 +4,9 @@ description: >
   Find open HubSpot deals that have gone stale, verify contacts are still in their roles, research company news for fresh angles, and generate revival outreach to re-engage dormant pipeline.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
-
-# stale-opportunity-reviver
 
 # Stale Opportunity Reviver
 

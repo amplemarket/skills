@@ -4,11 +4,9 @@ description: >
   Enrich a single prospect using any available identifier and produce a structured profile with an ICP fit score and recommended next actions.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
-
-# enrich-and-score-lead
 
 # Enrich and Score Lead
 

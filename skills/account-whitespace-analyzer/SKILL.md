@@ -4,11 +4,9 @@ description: >
   Analyze existing HubSpot customer accounts to find untapped departments and personas, map whitespace against the full organizational structure from Amplemarket, and generate expansion outreach referencing the existing customer relationship.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
-
-# account-whitespace-analyzer
 
 # Account Whitespace Analyzer
 

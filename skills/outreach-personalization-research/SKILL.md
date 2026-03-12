@@ -4,11 +4,9 @@ description: >
   Research a prospect deeply and generate actionable personalization angles with draft opening lines for cold outreach.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
-
-# outreach-personalization-research
 
 # Outreach Personalization Research
 

@@ -4,11 +4,12 @@ description: >
   Help AEs get a status check on their accounts with open deals -- where things stand, where to focus, and what next steps to take.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
 
-# ae-pipeline-review
+
+# AE Pipeline Review
 
 Help AEs get a status check on their accounts with open deals -- where things stand, where to focus, and what next steps to take.
 

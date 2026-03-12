@@ -4,11 +4,9 @@ description: >
   Interactively refine your Ideal Customer Profile through guided questions, web research, and iterative Amplemarket searches until your targeting criteria are dialed in.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
 compatibility: Requires Amplemarket MCP server
 ---
-
-# icp-refiner
 
 | Problem | Solution |
 | --- | --- |
