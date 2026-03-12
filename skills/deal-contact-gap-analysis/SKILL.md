@@ -4,7 +4,8 @@ description: >
   Analyze open HubSpot deals to map existing contacts against the typical buying committee, identify missing roles, and find recommended contacts to fill the gaps via Amplemarket.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Account Intelligence"
 compatibility: Requires Amplemarket MCP server
 ---
 

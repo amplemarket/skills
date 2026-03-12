@@ -4,7 +4,8 @@ description: >
   Compare outreach sequences side by side to identify top performers, flag underperformers, and surface A/B testing insights that improve reply rates.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Pipeline Management"
 compatibility: Requires Amplemarket MCP server
 ---
 

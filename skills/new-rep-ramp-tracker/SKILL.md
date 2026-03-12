@@ -4,7 +4,8 @@ description: >
   Track a new rep's ramp progress against team benchmarks at the same tenure, helping managers spot early if someone is ahead, on track, or falling behind.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Team & Coaching"
 compatibility: Requires Amplemarket MCP server
 ---
 

@@ -4,7 +4,8 @@ description: >
   Generate a comprehensive, structured research brief before any sales call by combining person enrichment, company intelligence, CRM history, web research, and competitive analysis into a single actionable document.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Outreach & Personalization"
 compatibility: Requires Amplemarket MCP server
 ---
 

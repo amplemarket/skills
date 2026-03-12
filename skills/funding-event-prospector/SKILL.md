@@ -4,7 +4,8 @@ description: >
   Find companies that recently raised funding and identify decision-makers for timely, signal-based outreach.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Signal Monitoring"
 compatibility: Requires Amplemarket MCP server
 ---
 

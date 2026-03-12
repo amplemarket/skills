@@ -4,7 +4,8 @@ description: >
   End-to-end workflow to search for prospects, preview results, refine criteria, and create a confirmed lead list in Amplemarket.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Prospecting & Lead Generation"
 compatibility: Requires Amplemarket MCP server
 ---
 

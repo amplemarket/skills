@@ -4,7 +4,8 @@ description: >
   Research conference speakers, sponsors, and attendees, cross-reference against your ICP, and produce a tiered networking playbook with per-person personalization, icebreakers, and follow-up openers.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Outreach & Personalization"
 compatibility: Requires Amplemarket MCP server
 ---
 

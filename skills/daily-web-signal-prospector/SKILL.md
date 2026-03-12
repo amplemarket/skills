@@ -4,7 +4,8 @@ description: >
   Search the web for buying signals relevant to your ICP within a user-defined timeframe, then find and enrich decision-makers at signal-matching companies.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Prospecting & Lead Generation"
 compatibility: Requires Amplemarket MCP server
 ---
 

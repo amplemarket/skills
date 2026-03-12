@@ -4,7 +4,8 @@ description: >
   Search for companies in a target market, find key buyers at each, and produce a segmented market map with the option to create a lead list.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Prospecting & Lead Generation"
 compatibility: Requires Amplemarket MCP server
 ---
 

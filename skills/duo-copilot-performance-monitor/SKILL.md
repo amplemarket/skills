@@ -4,7 +4,8 @@ description: >
   Post a weekly Duo Copilot performance report to a Slack channel, covering activity metrics for the current week and outcome/performance metrics over a 30-day rolling window.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
+  category: "Copilot Tools"
 compatibility: Requires Amplemarket MCP server
 ---
 
