@@ -1,11 +1,17 @@
 ---
 name: amplemarket-org-chart
-description: "Build a visual, interactive org chart for any target account using Amplemarket and HubSpot MCP data. Combines contact discovery, enrichment, outreach history, CRM deal context, and relationship signals into a single React-based visual. Use this skill whenever the user asks to map an org structure, visualize contacts at a company, understand outreach status across an account, build a stakeholder map, do account-based research, cross-reference with CRM, see account penetration with CRM data, or map a specific team. Trigger phrases include: \"show me the org chart for [company]\", \"who do we know at [company]\", \"map the buying committee\", \"show me outreach status for [account]\", \"pull all contacts at [domain]\", \"account map\", \"stakeholder map\", \"account penetration\", \"engineering org chart for [company]\", \"map the product team at [company]\", \"deal context for [account]\"."
+description: >
+  Build a visual, interactive org chart for any target account using Amplemarket and HubSpot MCP data. Combines contact discovery, enrichment, outreach history, CRM deal context, and relationship signals into a single React-based visual. Use this skill whenever the user asks to map an org structure, visualize contacts at a company, understand outreach status across an account, build a stakeholder map, do account-based research, cross-reference with CRM, see account penetration with CRM data, or map a specific team. Trigger phrases include: "show me the org chart for [company]", "who do we know at [company]", "map the buying committee", "show me outreach status for [account]", "pull all contacts at [domain]", "account map", "stakeholder map", "account penetration", "engineering org chart for [company]", "map the product team at [company]", "deal context for [account]".
+metadata:
+  author: amplemarket
+  version: "1.0.0"
+  category: "Account Intelligence"
+compatibility: Requires Amplemarket MCP server
 ---
 
 # Amplemarket Account Org Chart Builder
 
-Build an interactive, color-coded org chart for a target account that shows every contact, their outreach status, communication history, CRM deal context, and relationship signals — all in a single visual.
+Build an interactive, color-coded org chart for a target account that shows every contact, their outreach status, communication history, CRM deal context, and relationship signals -- all in a single visual.
 
 ## When to Use
 
@@ -21,7 +27,7 @@ Build an interactive, color-coded org chart for a target account that shows ever
 
 The user must have the **Amplemarket MCP** connector enabled. If the tools aren't available, tell the user to enable the Amplemarket integration in their Claude settings.
 
-**HubSpot MCP** is optional but recommended — it enables CRM cross-referencing (deal context, lifecycle stage, ownership). If HubSpot tools aren't available, skip CRM steps and note it in the summary.
+**HubSpot MCP** is optional but recommended -- it enables CRM cross-referencing (deal context, lifecycle stage, ownership). If HubSpot tools aren't available, skip CRM steps and note it in the summary.
 
 ## Workflow
 
@@ -41,9 +47,9 @@ Ask the user for a **company name or domain**. Then:
 
 Before pulling contacts, ask the user which departments or functions to focus on. Tailor the question based on company size (from Step 1 firmographics):
 
-- **Small company (<200 employees)**: "I'll pull everyone — should be manageable."
-- **Medium company (200–2,000 employees)**: "Want me to focus on specific departments (e.g., Engineering, Sales, Marketing) or pull all?"
-- **Large company (2,000+ employees)**: "This is a large company — I'll need to focus. Which departments and seniority levels matter most?"
+- **Small company (<200 employees)**: "I'll pull everyone -- should be manageable."
+- **Medium company (200-2,000 employees)**: "Want me to focus on specific departments (e.g., Engineering, Sales, Marketing) or pull all?"
+- **Large company (2,000+ employees)**: "This is a large company -- I'll need to focus. Which departments and seniority levels matter most?"
 
 Use the answer to set `job_functions` and `person_seniorities` filters for the contact search in Step 3.
 
@@ -58,7 +64,7 @@ Pull contacts from multiple angles to maximize coverage, applying department/sen
    - `["Manager", "Senior"]`
 3. **Check known contacts**: If the account data from Step 1 includes email addresses, call `Amplemarket:get_contacts` to pull their Amplemarket contact records with engagement history.
 
-**Deduplication strategy** — deduplicate using this priority:
+**Deduplication strategy** -- deduplicate using this priority:
 1. **Primary key**: LinkedIn URL (exact match)
 2. **Fallback**: Email address (exact match)
 3. **Last resort**: Name + company + normalized title (strip "Sr."/"Senior"/"Jr."/"Junior"/"Lead"/"Staff" prefixes and compare)
@@ -67,14 +73,14 @@ Pull contacts from multiple angles to maximize coverage, applying department/sen
 
 **Enrichment**: For the most important contacts (C-suite, VPs, decision-makers), call `Amplemarket:enrich_person` to get:
 - Full profile data (title, department, location, LinkedIn URL)
-- Email (set `reveal_email: true` if the user wants contact info — warn about credit cost)
+- Email (set `reveal_email: true` if the user wants contact info -- warn about credit cost)
 - Phone (set `reveal_phone_numbers: true` only if explicitly requested)
 
 Be judicious with enrichment credits. Prioritize leadership and contacts in relevant departments.
 
 **HubSpot cross-reference** (skip if HubSpot tools are unavailable): For contacts with email addresses, call `HubSpot:search_crm_objects` (type=contacts) searching by email to find matching CRM records. For matches, pull:
 - Lifecycle stage, lead status, HubSpot owner
-- Associated deals via `HubSpot:search_crm_objects` (type=deals) associated with those contacts — capture deal stage, amount, and close date
+- Associated deals via `HubSpot:search_crm_objects` (type=deals) associated with those contacts -- capture deal stage, amount, and close date
 
 This enriches the "Already in CRM" signal with actual deal context.
 
@@ -84,14 +90,14 @@ Fire `Amplemarket:ask_analytics` to query outreach history. Ask questions like:
 - `"Show me all outreach activity for contacts at [company domain]"`
 - `"Which contacts at [domain] have replied to our sequences?"`
 
-**While waiting for analytics**: Proceed immediately to Step 6 (signal identification) using data already gathered from Steps 3–4. Don't block on analytics.
+**While waiting for analytics**: Proceed immediately to Step 6 (signal identification) using data already gathered from Steps 3-4. Don't block on analytics.
 
 Then poll with `Amplemarket:get_analytics_result` using this retry strategy:
 1. Wait ~15 seconds, then call `get_analytics_result`.
 2. If the result isn't ready, wait another 15 seconds and retry.
-3. Max 3 retries. If all retries fail, proceed without analytics data — mark affected contacts as "outreach status unknown" and tell the user: "Analytics data wasn't available. Outreach status is based on contact records only."
+3. Max 3 retries. If all retries fail, proceed without analytics data -- mark affected contacts as "outreach status unknown" and tell the user: "Analytics data wasn't available. Outreach status is based on contact records only."
 
-Also check `Amplemarket:get_contacts` for any contacts whose emails you already have — the contact record may include sequence enrollment, email status, and reply data. This supplements analytics data.
+Also check `Amplemarket:get_contacts` for any contacts whose emails you already have -- the contact record may include sequence enrollment, email status, and reply data. This supplements analytics data.
 
 Merge analytics data into signals when available; if not, contacts retain their "unknown" status with a note in the summary.
 
@@ -139,7 +145,7 @@ const orgData = {
         sequence: "Enterprise Outbound Q1",
         touchpoints: 3,
         replied: true,
-        replySummary: "Positive — asked for a demo next week",
+        replySummary: "Positive -- asked for a demo next week",
         lastActivity: "2026-02-28"
       },
       relationships: {
@@ -164,13 +170,13 @@ const orgData = {
 
 #### Layout Selection by Contact Count
 
-**Small accounts (1–5 contacts) → Card Grid layout:**
-Don't render a tree — show a horizontal row of contact cards (or 2×3 grid) beneath the company header. Each card is larger with more detail visible by default: name, title, department, email, LinkedIn link, status badge, outreach summary, and deal info. No connector lines needed.
+**Small accounts (1-5 contacts) - Card Grid layout:**
+Don't render a tree -- show a horizontal row of contact cards (or 2x3 grid) beneath the company header. Each card is larger with more detail visible by default: name, title, department, email, LinkedIn link, status badge, outreach summary, and deal info. No connector lines needed.
 
-**Medium accounts (6–30 contacts) → Full Tree layout:**
+**Medium accounts (6-30 contacts) - Full Tree layout:**
 This is the primary use case. Render the full interactive tree as described below.
 
-**Large accounts (30+ contacts) → Collapsed Tree layout:**
+**Large accounts (30+ contacts) - Collapsed Tree layout:**
 Render the tree but collapse Director-level branches by default (show the Director card with a "+N reports" badge). User can click to expand any branch. Provide "Expand All" / "Collapse All" toggles. Group by department at the VP level.
 
 #### Visual Design
@@ -195,7 +201,7 @@ Since Amplemarket doesn't store reporting lines, infer hierarchy from seniority 
 
 If the user scoped the search to a specific department in Step 2, make that department's VP/Head the root instead of CEO.
 
-Group children by department or region when a parent has many reports. If a node has >8 direct reports, show first 4–5 and a "+N more" expandable badge.
+Group children by department or region when a parent has many reports. If a node has >8 direct reports, show first 4-5 and a "+N more" expandable badge.
 
 **Responsive**: Horizontally scrollable for wide trees.
 
@@ -203,7 +209,7 @@ Group children by department or region when a parent has many reports. If a node
 Above the tree. Company name, domain, industry, size, and key engagement stats (emails sent, replies, meetings, account score) in a row of stat badges.
 
 **Controls Bar:**
-Below header, above tree: search input, status filter pills (All, Engaged, In Sequence, No Outreach, Warm — each with a count), and expand-all toggle.
+Below header, above tree: search input, status filter pills (All, Engaged, In Sequence, No Outreach, Warm -- each with a count), and expand-all toggle.
 
 **Legend:**
 Fixed bottom-right corner: small floating card with color dot + label for each status.
@@ -221,7 +227,7 @@ After rendering the org chart, provide a brief text summary:
 If analytics data was unavailable (Step 5 failed), note this in the summary and suggest re-running later.
 If HubSpot data was unavailable, note that CRM cross-referencing was skipped.
 
-### Step 9: Optional — Create Lead List
+### Step 9: Optional -- Create Lead List
 
 After presenting the chart, offer: "Want me to create an Amplemarket lead list with the uncovered contacts (no outreach yet)?"
 
@@ -252,6 +258,6 @@ This gives the sales team a ready-made list of gaps to fill.
 - **Credit awareness**: `enrich_person` costs 0.5 credits per call. `reveal_email` and `reveal_phone_numbers` cost additional credits. Always warn the user before batch-enriching. For large accounts (50+ people), suggest enriching only leadership first.
 - **Rate limits**: Space out `enrich_person` calls. Don't fire 50 enrichments simultaneously.
 - **Data freshness**: Amplemarket data is cached for 24h after enrichment. Mention this if the user asks about accuracy.
-- **Hierarchy inference**: Amplemarket doesn't store explicit reporting lines. The skill infers hierarchy from seniority level and department. Call this out to the user — it's a best-guess org chart, not a verified reporting structure.
+- **Hierarchy inference**: Amplemarket doesn't store explicit reporting lines. The skill infers hierarchy from seniority level and department. Call this out to the user -- it's a best-guess org chart, not a verified reporting structure.
 - **Graceful degradation**: If any data source fails (analytics, enrichment, contact search, HubSpot), proceed with what you have. An incomplete org chart with clear labels about what's missing is more useful than no chart at all.
 - **HubSpot is optional**: If HubSpot tools aren't available or the user doesn't have HubSpot connected, skip all CRM cross-referencing steps and note it in the summary. The org chart is fully functional without CRM data.
