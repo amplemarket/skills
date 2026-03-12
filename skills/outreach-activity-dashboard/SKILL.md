@@ -4,7 +4,7 @@ description: >
   Build an activity dashboard with volume trends, engagement snapshots, and consistency analysis to help sales leaders spot gaps and keep the team on track.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
   category: "Pipeline Management"
 compatibility: Requires Amplemarket MCP server
 ---

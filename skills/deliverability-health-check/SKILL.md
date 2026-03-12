@@ -4,7 +4,7 @@ description: >
   Audit your email deliverability by analyzing bounce rates, open rate anomalies, and sending patterns across reps and sequences to catch domain reputation issues early.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
   category: "Deliverability"
 compatibility: Requires Amplemarket MCP server
 ---

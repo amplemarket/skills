@@ -4,7 +4,7 @@ description: >
   Scrape conference and event websites for speakers, sponsors, and exhibitors, enrich them via Amplemarket, filter against your ICP, and find decision-makers at those companies.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
   category: "Prospecting & Lead Generation"
 compatibility: Requires Amplemarket MCP server
 ---

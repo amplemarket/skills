@@ -4,7 +4,7 @@ description: >
   Build a lookalike audience from a seed person, company, lead list, or website with customer logos, then search for similar profiles with match reasoning and personalization fields.
 metadata:
   author: amplemarket
-  version: "1.0.3"
+  version: "1.0.4"
   category: "Prospecting & Lead Generation"
 compatibility: Requires Amplemarket MCP server
 ---
