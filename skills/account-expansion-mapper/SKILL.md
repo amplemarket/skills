@@ -7,6 +7,7 @@ description: >
 metadata:
   author: amplemarket
   version: "1.0.3"
+  category: "Account Intelligence"
 compatibility: Requires Amplemarket MCP server
 ---
 

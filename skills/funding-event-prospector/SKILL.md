@@ -5,6 +5,7 @@ description: >
 metadata:
   author: amplemarket
   version: "1.0.3"
+  category: "Signal Monitoring"
 compatibility: Requires Amplemarket MCP server
 ---
 
