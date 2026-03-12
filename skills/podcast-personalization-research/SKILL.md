@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# podcast-personalization-research
-
 # Podcast Personalization Research
 
 Research a prospect's podcast appearances and generate deep personalization angles with specific quotes, topics, and draft openers for outreach.

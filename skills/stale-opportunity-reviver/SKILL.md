@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# stale-opportunity-reviver
-
 # Stale Opportunity Reviver
 
 Find open HubSpot deals that have gone stale, verify contacts are still in their roles, research company news for fresh angles, and generate revival outreach to re-engage dormant pipeline.

@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# champion-tracker
-
 # Champion Tracker
 
 Track former champions from closed-won HubSpot deals who have moved to new companies, research their new organizations, and generate warm re-engagement outreach leveraging your shared deal history.

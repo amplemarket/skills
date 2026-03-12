@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# prospect-icp-search
-
 # Prospect ICP Search
 
 Search for prospects matching an Ideal Customer Profile using natural language. This skill translates human-friendly buyer descriptions into structured Amplemarket API queries and returns formatted results.

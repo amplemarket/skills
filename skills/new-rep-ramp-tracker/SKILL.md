@@ -8,7 +8,8 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# new-rep-ramp-tracker
+
+# New Rep Ramp Tracker
 
 Track a new rep's ramp progress against team benchmarks at the same tenure, helping managers spot early if someone is ahead, on track, or falling behind.
 

@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# competitor-displacement-targeting
-
 # Competitor Displacement Targeting
 
 Find companies using a competitor's product across multiple evidence vectors and target decision-makers for rip-and-replace campaigns.

@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# sequence-performance-analyzer
-
 # Sequence Performance Analyzer
 
 Compare outreach sequences side by side to identify top performers, flag underperformers, and surface A/B testing insights that improve reply rates.

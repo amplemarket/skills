@@ -8,7 +8,8 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# sdr-account-prioritization-plan
+
+# SDR Account Prioritization Plan
 
 Help SDRs figure out which accounts to focus on and how to break into them -- combining internal engagement data with external signals to prioritize accounts and plan next moves.
 

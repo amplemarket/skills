@@ -8,7 +8,8 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# duo-copilot-performance-monitor
+
+# Duo Copilot Performance Monitor
 
 Post a weekly Duo Copilot performance report to a Slack channel, covering activity metrics for the current week and outcome/performance metrics over a 30-day rolling window.
 

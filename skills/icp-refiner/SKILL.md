@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# icp-refiner
-
 | Problem | Solution |
 | --- | --- |
 | Zero results returned | Relax filters one at a time in this order: 1) Remove geography restrictions. 2) Broaden company size by one tier in each direction. 3) Add adjacent seniority levels (e.g., add Manager if only targeting Director+). 4) Try related industry values from `mcp__claude_ai_Amplemarket__get_industries`. Report each change and its impact on result count. |

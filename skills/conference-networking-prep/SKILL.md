@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# conference-networking-prep
-
 # Conference Networking Prep
 
 Research conference speakers, sponsors, and attendees, cross-reference against your ICP, and produce a tiered networking playbook with per-person personalization, icebreakers, and follow-up openers.

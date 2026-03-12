@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# deliverability-health-check
-
 # Deliverability Health Check
 
 Audit your email deliverability by analyzing bounce rates, open rate anomalies, and sending patterns across reps and sequences to catch domain reputation issues early.

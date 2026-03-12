@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# job-change-signal-tracker
-
 # Job Change Signal Tracker
 
 Track job changes for key contacts, research their new companies, and generate warm re-engagement outreach based on your prior relationship.

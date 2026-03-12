@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# deal-contact-gap-analysis
-
 # Deal Contact Gap Analysis
 
 Analyze open HubSpot deals to map existing contacts against the typical buying committee, identify missing roles, and find recommended contacts to fill the gaps via Amplemarket.

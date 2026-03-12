@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# enrich-and-score-lead
-
 # Enrich and Score Lead
 
 Enrich a single prospect using any available identifier and produce a structured profile with an ICP fit score and recommended next actions.

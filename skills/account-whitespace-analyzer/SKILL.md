@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# account-whitespace-analyzer
-
 # Account Whitespace Analyzer
 
 Analyze existing HubSpot customer accounts to find untapped departments and personas, map whitespace against the full organizational structure from Amplemarket, and generate expansion outreach referencing the existing customer relationship.

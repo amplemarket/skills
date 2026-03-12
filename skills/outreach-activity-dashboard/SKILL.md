@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# outreach-activity-dashboard
-
 # Outreach Activity Dashboard
 
 Build an activity dashboard with volume trends, engagement snapshots, and consistency analysis to help sales leaders spot gaps and keep the team on track.

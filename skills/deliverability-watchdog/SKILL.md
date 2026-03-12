@@ -8,7 +8,8 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# deliverability-watchdog
+
+# Deliverability Watchdog
 
 Monitor email deliverability health and flag mailboxes or domains showing signs of spam or bounce issues before they damage sender reputation.
 

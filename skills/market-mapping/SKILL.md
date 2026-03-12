@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# market-mapping
-
 # Market Mapping
 
 Search for companies in a target market, find key buyers at each, and produce a segmented market map with the option to create a lead list.

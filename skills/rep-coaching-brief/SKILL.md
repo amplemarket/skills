@@ -8,7 +8,8 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# rep-coaching-brief
+
+# Rep Coaching Brief
 
 Generate coaching notes for a manager preparing a 1:1 with a rep, covering activity, engagement quality, conversion efficiency, and areas for improvement.
 

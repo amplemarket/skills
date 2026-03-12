@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# outreach-personalization-research
-
 # Outreach Personalization Research
 
 Research a prospect deeply and generate actionable personalization angles with draft opening lines for cold outreach.

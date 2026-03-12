@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# pipeline-account-review
-
 # Pipeline Account Review
 
 Audit pipeline accounts by analyzing engagement data, mapping stakeholders, identifying gaps, and prioritizing next actions.

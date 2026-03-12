@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# funding-event-prospector
-
 # Funding Event Prospector
 
 Find companies that recently raised funding and identify decision-makers for timely, signal-based outreach.

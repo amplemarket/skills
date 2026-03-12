@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# competitive-account-research
-
 # Competitive Account Research
 
 Generate a comprehensive account brief by combining company enrichment, decision-maker mapping, and engagement history from Amplemarket.

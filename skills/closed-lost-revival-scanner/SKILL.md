@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# closed-lost-revival-scanner
-
 # Closed-Lost Revival Scanner
 
 Scan closed-lost HubSpot deals, research trigger events that occurred since the loss date, score revival potential, and generate re-engagement outreach for the highest-potential opportunities.

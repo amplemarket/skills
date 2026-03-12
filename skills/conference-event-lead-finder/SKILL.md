@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# conference-event-lead-finder
-
 # Conference & Event Lead Finder
 
 Scrape conference and event websites for speakers, sponsors, and exhibitors, enrich them via Amplemarket, filter against your ICP, and find decision-makers at those companies.

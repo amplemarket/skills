@@ -8,8 +8,6 @@ metadata:
 compatibility: Requires Amplemarket MCP server
 ---
 
-# build-targeted-lead-list
-
 # Build Targeted Lead List
 
 End-to-end workflow to search for prospects, preview results, refine criteria, and create a confirmed lead list in Amplemarket.
