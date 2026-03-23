@@ -4,20 +4,10 @@ description: >
   Interactively refine your Ideal Customer Profile through guided questions, web research, and iterative Amplemarket searches until your targeting criteria are dialed in.
 metadata:
   author: amplemarket
-  version: "1.0.4"
+  version: "1.0.5"
   category: "Configuration"
 compatibility: Requires Amplemarket MCP server
 ---
-
-| Problem | Solution |
-| --- | --- |
-| Zero results returned | Relax filters one at a time in this order: 1) Remove geography restrictions. 2) Broaden company size by one tier in each direction. 3) Add adjacent seniority levels (e.g., add Manager if only targeting Director+). 4) Try related industry values from `mcp__claude_ai_Amplemarket__get_industries`. Report each change and its impact on result count. |
-| Too many results (10,000+) | Add filters progressively: 1) Restrict seniority to Director+ or VP+. 2) Narrow company size to 1-2 tiers. 3) Add geography constraints. 4) Exclude low-fit industries. Show the user the count after each change so they can decide when to stop. |
-| Industry values don't match user's description | Call `mcp__claude_ai_Amplemarket__get_industries` and present the closest 5-10 options. Let the user pick which ones apply. Common mismatches: "SaaS" maps to "Computer Software" or "Internet"; "fintech" maps to "Financial Services" or "Banking". |
-| User doesn't know their ICP at all | Start with WebSearch to research their company and product. Identify the product category, then suggest a default ICP based on common buyer personas for that category (e.g., developer tools typically sell to VP Engineering / CTO at mid-market software companies). Run a broad initial search and let the data guide refinement. |
-| Conflicting criteria from user | Surface the conflict explicitly: "You mentioned targeting startups (1-50 employees) but also said your average deal is $50K/year. That price point typically fits 200+ employee companies. Which should we prioritize?" Let the user resolve the tension, then adjust. |
-| search_people returns unexpected results | Verify enum values by rechecking `mcp__claude_ai_Amplemarket__get_industries` and `mcp__claude_ai_Amplemarket__get_job_functions`. Common issues: 1) Industry values are outdated, so re-fetch. 2) Title keywords match unrelated roles, so add department filter to constrain. 3) Location strings are ambiguous, so use "City, Country" format. 4) Company size enum doesn't match, so use exact values like "201-500 employees". |
-| Enriched best customer has sparse data | Try enriching with the company's LinkedIn URL or alternate domains. If firmographic data is limited, fall back to asking the user to describe the company profile manually and use that as the basis for the ICP hypothesis. |
 
 # ICP Refiner
 
@@ -286,3 +276,13 @@ Your original ICP was returning 50,000+ results. Here is how we narrowed it:
 That is a 96% reduction from your original search. These 2,100 prospects are much more likely to be actual buyers. Want me to create a lead list?
 
 ## Troubleshooting
+
+| Problem | Solution |
+| --- | --- |
+| Zero results returned | Relax filters one at a time in this order: 1) Remove geography restrictions. 2) Broaden company size by one tier in each direction. 3) Add adjacent seniority levels (e.g., add Manager if only targeting Director+). 4) Try related industry values from `mcp__claude_ai_Amplemarket__get_industries`. Report each change and its impact on result count. |
+| Too many results (10,000+) | Add filters progressively: 1) Restrict seniority to Director+ or VP+. 2) Narrow company size to 1-2 tiers. 3) Add geography constraints. 4) Exclude low-fit industries. Show the user the count after each change so they can decide when to stop. |
+| Industry values don't match user's description | Call `mcp__claude_ai_Amplemarket__get_industries` and present the closest 5-10 options. Let the user pick which ones apply. Common mismatches: "SaaS" maps to "Computer Software" or "Internet"; "fintech" maps to "Financial Services" or "Banking". |
+| User doesn't know their ICP at all | Start with WebSearch to research their company and product. Identify the product category, then suggest a default ICP based on common buyer personas for that category (e.g., developer tools typically sell to VP Engineering / CTO at mid-market software companies). Run a broad initial search and let the data guide refinement. |
+| Conflicting criteria from user | Surface the conflict explicitly: "You mentioned targeting startups (1-50 employees) but also said your average deal is $50K/year. That price point typically fits 200+ employee companies. Which should we prioritize?" Let the user resolve the tension, then adjust. |
+| search_people returns unexpected results | Verify enum values by rechecking `mcp__claude_ai_Amplemarket__get_industries` and `mcp__claude_ai_Amplemarket__get_job_functions`. Common issues: 1) Industry values are outdated, so re-fetch. 2) Title keywords match unrelated roles, so add department filter to constrain. 3) Location strings are ambiguous, so use "City, Country" format. 4) Company size enum doesn't match, so use exact values like "201-500 employees". |
+| Enriched best customer has sparse data | Try enriching with the company's LinkedIn URL or alternate domains. If firmographic data is limited, fall back to asking the user to describe the company profile manually and use that as the basis for the ICP hypothesis. |
