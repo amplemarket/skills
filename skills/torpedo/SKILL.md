@@ -43,12 +43,10 @@ The minimum input is a company name, domain, or LinkedIn URL. The skill handles 
 
 Before researching any target account, build context about who is selling.
 
-On first use, check [preferences.md](preferences.md). If it only contains the example entry, ask the user for their company domain and then:
+If the user hasn't already shared this in the conversation, ask them for their company domain, and then:
 
-- **Research their company**: enrich via Amplemarket + web search. Understand what they sell, how they position it, who their target customers are, who they compete against, any recent launches or milestones, etc.
+- **Research their company**: enrich via Amplemarket + web search (mandatory). Understand what they sell, how they position it, who their target customers are, who they compete against, any recent launches or milestones, etc.
 - **Research the user**: if they share identifying info, enrich them and look up their background too. Can be relevant for things like for instance finding common ground with contacts later (e.g. shared alma mater, or previous companies, geography, interests, etc).
-
-Store this in [preferences.md](preferences.md) with a date. If existing context is older than 30 days, re-research and refresh.
 
 ### Phase 1: Research the target
 
@@ -95,29 +93,13 @@ After presenting, **pause and ask for feedback**. The user might approve, ask fo
 
 Once we're aligned on a strategy, let's create a personalized sequence in Amplemarket for each contact, grounded in the account research, the chosen angle, and any relevant person-level details.
 
-**Default sequence structure** (unless the user has a stored preference): Start with one email and a connection request on LinkedIn (no accompanying message — it looks salesy). Then, 3 days later, if the LinkedIn connection request was accepted, send a first follow-up on LinkedIn, 3 days later send another one and then 3 days later again send a final follow-up. If the connection request isn't accepted, do the same but with email follow-ups.
+**Default sequence structure** (unless the user has shared a different preference in the conversation): Start with one email and a connection request on LinkedIn (no accompanying message — it looks salesy). Then, 3 days later, if the LinkedIn connection request was accepted, send a first follow-up on LinkedIn, 3 days later send another one and then 3 days later again send a final follow-up. If the connection request isn't accepted, do the same but with email follow-ups.
 
 Use `create_sequence` to build the sequence and `add_leads_to_sequence` to add the contact. Present the full sequence for the user to review before they activate it.
-
-If the user hasn't defined sequence structure preferences yet, ask after the first execution whether this structure matches what they usually run, and store their answer.
 
 ### Batch mode
 
 If the user provides multiple accounts, do a quick scan (enrichment + account data + brief web search) to suggest a priority order with reasoning. Then work through them one by one with the full Phase 1–3 workflow, presenting each account individually rather than overwhelming with everything at once.
-
-## Preferences
-
-Maintain [preferences.md](preferences.md). It stores context that persists across uses.
-
-**Examples of what to store:**
-- User's company context from Phase 0 (what they sell, competitors, value props, target personas, etc.) — with `last_updated` date
-- User's personal context (role, background, rapport-relevant details, etc.) — with `last_updated` date
-- Outreach preferences: target personas, entry strategy, preferred sequence structure, messaging tone, etc.
-- Learnings: specific feedback from past runs that should inform future recommendations
-
-Entries should follow the simple dated bullet format from the example in [preferences.md](preferences.md) — no structured sections, just a flat list of learnings with dates.
-
-When a preference is stored and later influences a recommendation, reference it transparently so the user can correct it if their thinking has evolved. Only store preferences after confirming with the user.
 
 ## Two notes
 
