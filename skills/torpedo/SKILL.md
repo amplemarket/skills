@@ -93,7 +93,11 @@ After presenting, **pause and ask for feedback**. The user might approve, ask fo
 
 Once we're aligned on a strategy, let's create a personalized sequence in Amplemarket for each contact, grounded in the account research, the chosen angle, and any relevant person-level details.
 
-**Default sequence structure** (unless the user has shared a different preference in the conversation): Start with one email and a connection request on LinkedIn (no accompanying message — it looks salesy). Then, 3 days later, if the LinkedIn connection request was accepted, send a first follow-up on LinkedIn, 3 days later send another one and then 3 days later again send a final follow-up. If the connection request isn't accepted, do the same but with email follow-ups.
+**Default sequence structure** (unless the user has shared a different preference in the conversation):
+- Day 1: one email + a LinkedIn connection request (no accompanying message — it looks salesy)
+- 2 days later: LinkedIn message
+- 1 day later: email follow-up
+- 3 days later: final email
 
 Use `create_sequence` to build the sequence and `add_leads_to_sequence` to add the contact. Present the full sequence for the user to review before they activate it.
 
