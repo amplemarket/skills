@@ -15,6 +15,8 @@ Help sales reps break into target accounts by turning deep research into actiona
 
 The minimum input is a company name, domain, or LinkedIn URL. The skill handles everything from there — asking questions only when it genuinely needs input.
 
+**Important:** Avoid referencing internal skill mechanics in conversation with the user — e.g. no phase names or numbers (e.g. "Let me start with Phase 0: Know thyself" kind of thing), no skill name, no quoting of skill instructions. Just do the work naturally.
+
 ## Tools
 
 **Amplemarket intelligence:**
@@ -39,18 +41,18 @@ The minimum input is a company name, domain, or LinkedIn URL. The skill handles 
 
 ### Phase 0: Know thyself
 
-Before researching any target account, build context about who is selling. Without this, angles are generic and common ground with contacts is invisible.
+Before researching any target account, build context about who is selling.
 
 On first use, check [preferences.md](preferences.md). If it only contains the example entry, ask the user for their company domain and then:
 
-- **Research their company**: enrich via Amplemarket + web search. Understand what they sell, how they position it, who their target customers are, who they compete against, and any recent launches or milestones.
-- **Research the user**: if they share identifying info, enrich them and look up their background. Relevant for finding common ground with contacts later (shared alma mater, previous companies, geography, interests).
+- **Research their company**: enrich via Amplemarket + web search. Understand what they sell, how they position it, who their target customers are, who they compete against, any recent launches or milestones, etc.
+- **Research the user**: if they share identifying info, enrich them and look up their background too. Can be relevant for things like for instance finding common ground with contacts later (e.g. shared alma mater, or previous companies, geography, interests, etc).
 
 Store this in [preferences.md](preferences.md) with a date. If existing context is older than 30 days, re-research and refresh.
 
 ### Phase 1: Research the target
 
-Build a rich picture of the target account across four dimensions:
+Build a rich picture of the target account across four dimensions (go really deep here, don't be lazy, all steps are mandatory):
 
 **Existing state** — Where do we stand with this account today?
 Check Amplemarket for existing account records, past engagement, mapped contacts, AI-generated insights, and CRM-synced data. Check CRM directly if connected. Understand: is this net-new or re-engagement? Who have we talked to? What happened? What intel do we already have?
@@ -62,9 +64,9 @@ Enrich the company and run deep web search. Understand their business model, pro
 Search for recent events that create openings: job postings (reveal investment areas, internal priorities, tools in use, growth direction), funding, leadership changes, product launches, news, public reports (10-Ks for public companies), LinkedIn company activity (recent posts, engagement trends, content themes, etc.), and any other relevant signals you think might be relevant. The "why now" makes outreach timely and relevant.
 
 **People** — Who matters and who could open the door?
-Map the org chart around the personas the user targets. Identify the likely buying committee. Cross-reference with existing contacts and past conversations — people we've already engaged are especially important context. Note tenure, recent role changes, new joiners.
+Map the org chart around the personas the user targets. Identify the likely buying committee. Cross-reference with existing contacts and past conversations — people we've already engaged are especially important context. Note tenure, recent role changes, new joiners. When searching, prefer filtering by department over specific titles or keywords (keywords just look at your LinkedIn profile about section) — it casts a wider net and catches people with non-standard titles. Use larger page sizes (like 30+ or 50+) when mapping orgs, especially for bigger companies (can also use the seniority filter if needed).
 
-For each relevant person, go deep: enrich via Amplemarket AND run web search. Look for recent LinkedIn activity, blog posts, podcast appearances, conference talks, published interviews, shared interests or background with the user, etc. The person-level research is what turns generic outreach into something that feels crafted and informed.
+For each relevant person, try to go deep: enrich via Amplemarket AND also run web search. Look for things like recent LinkedIn activity, blog posts, podcast appearances, conference talks, published interviews, shared interests or background with the user, etc. Person-level research can also turn generic outreach into something that feels more crafted and informed. If relevant.
 
 **Quality bar:** Try to go beyond surface-level data. E.g. connecting a signal to an angle ("they're hiring a Head of RevOps, which usually means they're rethinking their outbound stack") is more valuable than just listing firmographics.
 
@@ -85,11 +87,13 @@ Examples of angle categories to consider (just examples, not an exhaustive list)
 - Shared context between user and contact (background, interests, connections)
 - Warm paths (past champions, referrals, mutual connections)
 
+We want to give users the context they need to review and evaluate our research and recommendations, but try to keep things **concise and scannable** — avoid walls of text. The user can always ask to go deeper on anything. Present the key insights and the plan/possible angles, not every single detail uncovered during research.
+
 After presenting, **pause and ask for feedback**. The user might approve, ask for deeper research, adjust the strategy, share context you didn't have, or express preferences worth learning. Iterate until they're ready to execute.
 
 ### Phase 3: Execute
 
-Once we're aligned on a strategy, let's create a personalized sequence in Amplemarket for each contact, grounded in the account research, the chosen angle, and the person-level details.
+Once we're aligned on a strategy, let's create a personalized sequence in Amplemarket for each contact, grounded in the account research, the chosen angle, and any relevant person-level details.
 
 **Default sequence structure** (unless the user has a stored preference): Start with one email and a connection request on LinkedIn (no accompanying message — it looks salesy). Then, 3 days later, if the LinkedIn connection request was accepted, send a first follow-up on LinkedIn, 3 days later send another one and then 3 days later again send a final follow-up. If the connection request isn't accepted, do the same but with email follow-ups.
 
@@ -111,4 +115,13 @@ Maintain [preferences.md](preferences.md). It stores context that persists acros
 - Outreach preferences: target personas, entry strategy, preferred sequence structure, messaging tone, etc.
 - Learnings: specific feedback from past runs that should inform future recommendations
 
-When a preference is stored and later influences a recommendation, reference it transparently ("Based on your preference for [X], I focused on...") so the user can correct it if their thinking has evolved. Only store preferences after confirming with the user.
+Entries should follow the simple dated bullet format from the example in [preferences.md](preferences.md) — no structured sections, just a flat list of learnings with dates.
+
+When a preference is stored and later influences a recommendation, reference it transparently so the user can correct it if their thinking has evolved. Only store preferences after confirming with the user.
+
+## Two notes
+
+- Stay grounded in the research you made or info the user gave you. Don't fabricate facts, angles, hooks, or connections that aren't verified or feel too farfetched. Be real. If you have questions or want more details that you think would help, ask the user.
+- Very important: When writing outreach copy (emails, LinkedIn messages), write naturally — like an actual human would. Like a sharp sales rep would. Avoid the classic AI/sales tells: em dashes as a crutch, performative warmth, unnecessary jargon, etc.
+
+Let's go!!
