@@ -35,7 +35,7 @@ The minimum input is a company name, domain, or LinkedIn URL. The skill handles 
 
 **Web search** is equally important. Use it extensively throughout every phase for company research, signal detection, news, job postings, LinkedIn profiles, personal content (blog posts, podcasts, talks), public reports, and anything else that enriches understanding beyond what Amplemarket data provides.
 
-**CRM or other sales intelligence tools and knowledge basis** E.g. HubSpot or Salesforce may be connected. If available, we can use them for deal history, past conversations, opportunity context, and engagement timelines. If not connected, also ok — Amplemarket's `get_account` often includes CRM-synced data via its integrations.
+**CRM or other sales intelligence tools and knowledge bases** E.g. HubSpot or Salesforce may be connected. If available, we can use them for deal history, past conversations, opportunity context, and engagement timelines. If not connected, also ok — Amplemarket's `get_account` often includes CRM-synced data via its integrations.
 
 ## Workflow
 
@@ -62,7 +62,7 @@ Enrich the company and run deep web search. Understand their business model, pro
 Search for recent events that create openings: job postings (reveal investment areas, internal priorities, tools in use, growth direction), funding, leadership changes, product launches, news, public reports (10-Ks for public companies), LinkedIn company activity (recent posts, engagement trends, content themes, etc.), and any other relevant signals you think might be relevant. The "why now" makes outreach timely and relevant.
 
 **People** — Who matters and who could open the door?
-Map the org chart around the personas the user targets. Identify the likely buying committee. Cross-reference with existing contacts and past conversations — people we've already engaged are especially important context. Note tenure, recent role changes, new joiners. When searching, prefer filtering by department over specific titles or keywords (keywords just look at your LinkedIn profile about section) — it casts a wider net and catches people with non-standard titles. Use larger page sizes (like 30+ or 50+) when mapping orgs, especially for bigger companies (can also use the seniority filter if needed).
+Map the org chart around the personas the user targets. Identify the likely buying committee. Cross-reference with existing contacts and past conversations — people we've already engaged are especially important context. Note tenure, recent role changes, new joiners. When searching, prefer filtering by department over specific titles or keywords (the keywords filter only searches the prospect's LinkedIn About section) — it casts a wider net and catches people with non-standard titles. Use larger page sizes (like 30+ or 50+) when mapping orgs, especially for bigger companies (can also use the seniority filter if needed).
 
 For each relevant person, try to go deep: enrich via Amplemarket AND also run web search. Look for things like recent LinkedIn activity, blog posts, podcast appearances, conference talks, published interviews, shared interests or background with the user, etc. Person-level research can also turn generic outreach into something that feels more crafted and informed. If relevant.
 
@@ -105,9 +105,9 @@ Use `create_sequence` to build the sequence and `add_leads_to_sequence` to add t
 
 If the user provides multiple accounts, do a quick scan (enrichment + account data + brief web search) to suggest a priority order with reasoning. Then work through them one by one with the full Phase 1–3 workflow, presenting each account individually rather than overwhelming with everything at once.
 
-## Two notes
+## Two final important notes
 
 - Stay grounded in the research you made or info the user gave you. Don't fabricate facts, angles, hooks, or connections that aren't verified or feel too farfetched. Be real. If you have questions or want more details that you think would help, ask the user.
-- Very important: When writing outreach copy (emails, LinkedIn messages), write naturally — like an actual human would. Like a sharp sales rep would. Avoid the classic AI/sales tells: em dashes as a crutch, performative warmth, unnecessary jargon, etc.
+- Very important: When writing copy (emails, LinkedIn messages, etc), write naturally. Like an actual human would. Like a sharp, proficient and experienced sales rep or account executive would. Avoid the classic AI/sales tells: em dashes used as a crutch (please, don't use em dashes, please), trying too hard to sound clever or cool, performative warmth, humblebrags, templated openers or CTAs, unnecessary jargon, etc. You get the point. Also, as a general sales best practice, try to err more on the side of being tentative about the hypotheses you're forming vs communicating them as hard facts you're overly confident about. Put yourself in the shoes of the other person reading our emails. How will they feel?
 
 Let's go!!
