@@ -20,14 +20,15 @@ The minimum input is a company name, domain, or LinkedIn URL. The skill handles 
 ## Tools
 
 **Amplemarket intelligence:**
-- `enrich_company` — firmographics, tech stack, funding, headcount, description
-- `enrich_person` — career history, current role, education, skills, contact details
 - `search_people` — find people at a company by seniority, department, title, keywords
+- `enrich_person` — career history, current role, education, skills, contact details
 - `search_companies` — find companies by criteria
-- `get_account` — existing account record: engagement stats, CRM-synced data, AI-generated insights
+- `enrich_company` — firmographics, tech stack, funding, headcount, description
 - `list_accounts` — find accounts by owner, domain, name
-- `get_contact` / `get_contacts` / `list_contacts` — existing contact records with interaction history
+- `get_account` — existing account record: engagement stats, CRM-synced data, AI-generated insights
+- `list_contacts` / `get_contact`  — existing contact records with interaction history
 - `get_industries` / `get_job_functions` — valid enum values for search filters
+- `list_company_job_openings` / `get_company_job_opening` — find job openings for a company
 
 **Amplemarket execution:**
 - `create_sequence` — create a new outreach sequence with steps and content
@@ -59,7 +60,7 @@ Check Amplemarket for existing account records, past engagement, mapped contacts
 Enrich the company and run deep web search. Understand their business model, product, market position, customers, strategic priorities, and current challenges. This is the foundation for finding angles.
 
 **Signals & timing** — Why reach out now?
-Search for recent events that create openings: job postings (reveal investment areas, internal priorities, tools in use, growth direction), funding, leadership changes, product launches, news, public reports (10-Ks for public companies), LinkedIn company activity (recent posts, engagement trends, content themes, etc.), and any other relevant signals you think might be relevant. The "why now" makes outreach timely and relevant.
+Search for recent events that create openings: job postings (reveal investment areas, internal priorities, tools in use, growth direction), funding, leadership changes, product launches, news, public reports (10-Ks for public companies), LinkedIn company activity (recent posts, engagement trends, content themes, etc.), and any other relevant signals you think might be relevant. The "why now" makes outreach timely and relevant. Always combine both web search and the tools to find job postings. 
 
 **People** — Who matters and who could open the door?
 Map the org chart around the personas the user targets. Identify the likely buying committee. Cross-reference with existing contacts and past conversations — people we've already engaged are especially important context. Note tenure, recent role changes, new joiners. When searching, prefer filtering by department over specific titles or keywords (the keywords filter only searches the prospect's LinkedIn About section) — it casts a wider net and catches people with non-standard titles. Use larger page sizes (like 30+ or 50+) when mapping orgs, especially for bigger companies (can also use the seniority filter if needed).
@@ -74,7 +75,7 @@ Synthesize the research into clear, actionable recommendations. Cover things lik
 
 - **The current situation** — where we stand with this account, key findings, and what could make this a good moment to engage.
 - **Possible angles** — possible strategies and angles we could use to approach the account, each grounded in specific research findings. Quality over quantity — 2 well-supported angles beat 5 vague ones, and it's ok if there's really only one strong clear angle.
-- **Who to reach out to** — for each angle, the specific contacts to target with person-level reasoning: why this person, what would resonate with them, any rapport hooks, etc. The same contacts can appear across multiple angles. And multi-threading (i.e. reaching out to multiple contacts in parallel) is also ok if it makes sense.
+- **Who to reach out to** — for each angle, the specific contacts to target with person-level reasoning: why this person, what would resonate with them, any rapport hooks, etc. The same contacts can appear across multiple angles. And multi-threading (i.e. reaching out to multiple contacts in parallel) is also ok if it makes sense. Make sure to carefully analyse past activity with the specific contacts to target.
 
 Note: If there are meaningful gaps in what we know about the account, let that inform the strategy too — e.g. some outreach might need to be more discovery-oriented (learning about their situation) before it can be conversion-oriented (pitching a solution).
 
