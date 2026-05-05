@@ -43,6 +43,7 @@ Each skill is a self-contained directory with a `SKILL.md` file following the [a
 | sequence-performance-analyzer | Compare outreach sequences to find top performers |
 | stale-opportunity-reviver | Revive stale deals with fresh research and outreach plans |
 | team-performance-review | Compare rep performance with leaderboard format |
+| torpedo | Break into target accounts with deep research, strategic angles, and personalized sequences |
 
 ## Contributing
 
