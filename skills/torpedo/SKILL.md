@@ -1,7 +1,7 @@
 ---
 name: torpedo
 description: >
-  Researches target accounts in depth, maps their org chart and buying committee, builds strategic engagement plans with specific contact recommendations, and creates personalized multi-channel sequences via Amplemarket. Use when a rep wants to break into a new account, re-engage a stalled account, plan account penetration, identify decision-makers, or turn account research into personalized outreach sequences.
+  Helps sales reps break into target accounts via Amplemarket. Runs deep research on the company and key people, identifies the buying committee, surfaces possible engagement angles, recommends who to reach out to and why, and creates personalized multi-channel sequences. Use when a rep wants to research, plan, or execute outreach against a target account — net-new or re-engagement.
 metadata:
   author: amplemarket
   version: "1.0.0"
