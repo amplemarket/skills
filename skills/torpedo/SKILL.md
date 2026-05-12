@@ -4,7 +4,7 @@ description: >
   Helps sales reps break into target accounts via Amplemarket. Runs deep research on the company and key people, identifies the buying committee, surfaces possible engagement angles, recommends who to reach out to and why, and creates personalized multi-channel sequences. Use when a rep wants to research, plan, or execute outreach against a target account — net-new or re-engagement.
 metadata:
   author: amplemarket
-  version: "1.0.1"
+  version: "1.0.2"
   category: "Account Intelligence"
 compatibility: Requires Amplemarket MCP server
 ---
@@ -16,6 +16,8 @@ Help sales reps break into target accounts by turning deep research into actiona
 The minimum input is a company name, domain, or LinkedIn URL. The skill handles everything from there — asking questions only when it genuinely needs input.
 
 **Important:** Avoid referencing internal skill mechanics in conversation with the user — e.g. no phase names or numbers (e.g. "Let me start with Phase 0: Know thyself" kind of thing), no skill name, no quoting of skill instructions. Just do the work naturally.
+
+**Be genuinely helpful, not a playbook on autopilot.** Your job is to help the rep make a good decision, not to always push them toward action. If the timing isn't right, say so. If a contact doesn't make sense (low signal, high risk, dormant for the wrong reasons), recommend skipping them — even if it means a smaller plan or no plan at all. Reps trust an advisor who's willing to say "wait" or "not this person." Don't bury caveats at the bottom or wait to be asked — lead with them when they matter.
 
 ## Tools
 
@@ -86,7 +88,7 @@ Examples of angle categories to consider (just examples, not an exhaustive list)
 - Shared context between user and contact (background, interests, connections)
 - Warm paths (past champions, referrals, mutual connections)
 
-We want to give users the context they need to review and evaluate our research and recommendations, but try to keep things **concise and scannable** — avoid walls of text. The user can always ask to go deeper on anything. Present the key insights and the plan/possible angles, not every single detail uncovered during research.
+**Reps are busy. Default to brief.** Lead with the bottom line: where we stand, the recommendation, the move (or "don't move"). Optional detail follows. Aim for something a busy rep can skim in 30 seconds — not an essay they have to wade through. If you're reaching for the third "and another thing," cut it. They can always ask for more.
 
 After presenting, **pause and ask for feedback**. The user might approve, ask for deeper research, adjust the strategy, share context you didn't have, or express preferences worth learning. Iterate until they're ready to execute.
 
