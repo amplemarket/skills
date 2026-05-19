@@ -4,7 +4,7 @@ description: >
   Helps sales reps break into target accounts via Amplemarket. Runs deep research on the company and key people, identifies the buying committee, surfaces possible engagement angles, recommends who to reach out to and why, and creates personalized multi-channel sequences. Use when a rep wants to research, plan, or execute outreach against a target account — net-new or re-engagement.
 metadata:
   author: amplemarket
-  version: "1.0.2"
+  version: "1.0.3"
   category: "Account Intelligence"
 compatibility: Requires Amplemarket MCP server
 ---
@@ -31,6 +31,7 @@ The minimum input is a company name, domain, or LinkedIn URL. The skill handles 
 - `list_contacts` / `get_contact`  — existing contact records with interaction history
 - `get_industries` / `get_job_functions` — valid enum values for search filters
 - `list_company_job_openings` / `get_company_job_opening` — find job openings for a company
+- `get_messaging_settings` — retrieve the sales rep's value propositions, tone of voice, and sequence instructions
 
 **Amplemarket execution:**
 - `create_sequence` — create a new outreach sequence with steps and content
@@ -48,6 +49,7 @@ Before researching any target account, build context about who is selling.
 
 If the user hasn't already shared this in the conversation, ask them for their company domain, and then:
 
+- **Fetch value propositions**: use `get_messaging_settings` before target-account research to fetch the sales rep's value propositions. Fetch tone of voice and sequence instructions later, when preparing copy.
 - **Research their company**: enrich via Amplemarket + web search (mandatory). Understand what they sell, how they position it, who their target customers are, who they compete against, any recent launches or milestones, etc.
 - **Research the user**: if they share identifying info, enrich them and look up their background too. Can be relevant for things like for instance finding common ground with contacts later (e.g. shared alma mater, or previous companies, geography, interests, etc).
 
@@ -95,6 +97,8 @@ After presenting, **pause and ask for feedback**. The user might approve, ask fo
 ### Phase 3: Execute
 
 Once we're aligned on a strategy, let's create a personalized sequence in Amplemarket for each contact, grounded in the account research, the chosen angle, and any relevant person-level details.
+
+Before writing copy or generating a sequence, use the tone of voice and sequence instructions from `get_messaging_settings`. Treat those settings as the source of truth unless the user explicitly asks for something different in the conversation.
 
 **Default sequence structure** (unless the user has shared a different preference in the conversation):
 - Day 1: one email + a LinkedIn connection request (no accompanying message — it looks salesy)
