@@ -1,0 +1,19 @@
+{
+  "name": "amplemarket",
+  "displayName": "Amplemarket",
+  "description": "Sales and GTM skills for prospecting, account research, pipeline review, coaching, deliverability, and outreach. Requires the Amplemarket MCP server or connector.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Amplemarket"
+  },
+  "homepage": "https://www.amplemarket.com/skills",
+  "repository": "https://github.com/amplemarket/skills",
+  "keywords": [
+    "sales",
+    "gtm",
+    "prospecting",
+    "outreach",
+    "account-intelligence",
+    "amplemarket"
+  ]
+}
