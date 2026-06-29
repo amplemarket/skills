@@ -4,6 +4,28 @@ Sales skills for AI agents, designed to be used with the [Amplemarket MCP](https
 
 Each skill is a self-contained directory with a `SKILL.md` file following the [agentskills.io](https://agentskills.io) specification. Skills provide structured instructions that AI agents can follow to execute sales workflows — from prospecting and enrichment to pipeline review and team coaching.
 
+## Install as a Claude Plugin
+
+This repository is also a Claude plugin marketplace. Installing the `amplemarket` plugin makes all skills in the `skills/` directory available from Claude's `/` menu. These skills require the Amplemarket MCP server or connector to be configured separately.
+
+### Claude Web and Claude Desktop
+
+1. Open **Customize > Plugins**.
+2. Click the `+` button and choose **Add marketplace**.
+3. Choose **Add from a repository** and enter `amplemarket/skills`.
+4. Install the **Amplemarket** plugin.
+
+### Claude Code
+
+From Claude Code, add this marketplace and install the plugin:
+
+```text
+/plugin marketplace add amplemarket/skills
+/plugin install amplemarket@amplemarket
+```
+
+After installation, Amplemarket skills are available under the plugin namespace, for example `/amplemarket:torpedo`.
+
 ## Available Skills
 
 | Skill | Description |
