@@ -7,7 +7,11 @@
   "plugins": [
     {
       "name": "amplemarket",
-      "source": ".",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/amplemarket/skills.git",
+        "ref": "master"
+      },
       "displayName": "Amplemarket",
       "description": "Sales and GTM skills powered by Amplemarket. Requires the Amplemarket MCP server or connector.",
       "homepage": "https://www.amplemarket.com/skills",
