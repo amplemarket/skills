@@ -1,11 +1,16 @@
-# Apollo → Amplemarket workflows
+# Apollo
 
 Apollo calls this area **Workflows** and **Plays**. A workflow is the mechanism —
 trigger → conditions → actions, either event-driven or run on a schedule — and a play
-is a packaged workflow built around a signal, which is how most customers actually
-use it. Both decompose the same way, so migrate either through this file. Apollo
-**Sequences** are not workflows; a sequence maps to an Amplemarket sequence, and a
-play that enrolls someone into one maps to `add_to_sequence`.
+is a packaged workflow built around a signal, which is how most customers actually use
+it. Both decompose the same way, so migrate either through this file. Apollo
+**Sequences** are not workflows; a sequence is Apollo's sequence, and a play that
+enrolls someone into one is describing sequence membership.
+
+This file describes **Apollo**. It deliberately doesn't say what each part maps to in
+Amplemarket — `create_workflow` answers that against the live catalogue, and a mapping
+table here would be a stale second opinion. See the division of labour section in
+[SKILL.md](../SKILL.md).
 
 ## Where to read it
 
@@ -16,10 +21,6 @@ migration set. Open each and read the trigger card, the filter set, and the acti
 list; the list view collapses filters, so it isn't enough on its own. A screenshot or
 pasted text works as a fallback.
 
-Because the roster changes, treat the tables below as the mapping for what a play
-*means* rather than for a fixed UI. If the play uses a trigger or action that isn't
-listed, map it by meaning and say in the gap list that the mapping is an inference.
-
 ## Anatomy
 
 1. **Trigger** — a signal, an engagement event, or a schedule
@@ -28,97 +29,108 @@ listed, map it by meaning and say in the gap list that the mapping is an inferen
 4. **Actions** — ordered, run when the filters match
 5. **Whether a person can enter more than once**
 
-## Trigger
+## Triggers: signal vs engagement
 
-The split that decides most of the migration is signal triggers versus engagement
-triggers. Engagement triggers map cleanly; signal triggers — the reason people build
-plays in Apollo — don't map at all.
+The split that decides most of an Apollo migration is **signal triggers versus
+engagement triggers**, and it's a fact about Apollo rather than about the target.
 
-| Apollo trigger | Amplemarket trigger |
-| --- | --- |
-| Contact replies to a sequence email | `event_email_replied` |
-| Email bounced | `event_email_bounced` |
-| Contact added to a sequence | `event_sequence_lead_added_to_sequence` |
-| Sequence started | `event_sequence_started` |
-| Sequence finished with no reply | `event_sequence_completed_with_no_reply` |
-| Call logged | `event_call_logged` |
-| Meeting booked | `event_meeting_booked` |
-| Meeting rescheduled or canceled | No equivalent — Apollo's meeting triggers cover all three, Amplemarket only the booking |
-| LinkedIn connection accepted or replied | `event_linkedin_connection_accepted` / `event_linkedin_replied` |
-| CRM record created or updated | `event_crm_contact_*` / `event_crm_account_*` / `event_crm_lead_*` (CRM-gated) |
-| Inbound webhook | `webhook_received` (must be the workflow's only trigger) |
-| Email opened or clicked | No equivalent |
-| Scheduled run ("run this workflow on a schedule") | No equivalent — Amplemarket workflows are event-driven only |
+**Engagement triggers** fire on things that happened in the outreach itself — a reply,
+a bounce, a call logged, a meeting booked, a LinkedIn connection accepted, someone
+added to or finishing a sequence, a CRM record changing, an inbound webhook. These are
+ordinary automation events; describe them plainly.
 
-**Signal triggers have no Amplemarket workflow trigger at all**: job change, funding
+Two are narrower than they read: Apollo's meeting triggers cover booking, rescheduling
+*and* cancellation, and its email triggers include opens and clicks. Capture which of
+those the play actually uses instead of collapsing them to "meeting" or "email".
+
+**Signal triggers** are the ones people build Apollo plays for: job change, funding
 round, hiring and job postings, headcount growth, technology added, website visitor
-identification, buying-intent score changes, news mentions, and the deal-stall
-triggers behind Apollo's Deal Plays. Nothing fires a workflow off any of them.
+identification, buying-intent score changes, news mentions, and the deal-stall triggers
+behind Deal Plays.
 
-What Amplemarket has instead is the same signals as *search* criteria:
-`person_recently_changed_company`, `company_last_funding_types` and
-`company_last_funding_amount`, `company_has_recent_job_openings` and
-`company_recent_job_openings_seniorities`, `company_technology`, `company_news`. So a
-signal play is rebuildable as a saved search or a periodically refreshed lead list
-that feeds a sequence — a different mechanism, with different timing, and someone has
-to own refreshing it. Say that plainly. Don't bend a signal into a trigger.
+Here's the thing worth understanding about them: **the detection is Apollo's product,
+not the automation's logic.** Apollo is continuously scanning its own dataset and
+firing inside its own detection window. The play is just what happens afterwards. So a
+signal play isn't really "a trigger plus actions" — it's "Apollo's data pipeline plus
+actions", and only the second half is an automation at all.
+
+That shapes the migration: the actions usually move, and the detection has to be
+rebuilt as a search or a periodically refreshed list that someone owns refreshing.
+Propose that split explicitly rather than presenting it as an equivalent, because the
+timing genuinely changes — Apollo fires when it notices, a refreshed list fires when
+it's refreshed.
+
+**Scheduled runs** ("run this workflow every Monday") are time-driven rather than
+event-driven. Capture the schedule and flag it; a workflow waiting for an event is a
+different mechanism.
 
 ## Target and re-entry
 
-Person-level plays become scope `contact`; plays acting on everyone at an account
-become `account_contacts`. Apollo plays typically re-run whenever the signal recurs,
-so default to reenroll `always` unless the play is explicitly once-per-person — and
-confirm it, because it changes how many contacts get enrolled.
+Person-level plays act on the contact; plays acting on everyone at an account act on
+the company's contacts. Apollo plays typically re-run whenever the signal recurs, so
+default to describing them as re-triggering — and confirm it, because it changes how
+many contacts get enrolled.
 
 ## Filters
 
-This is the easy half of an Apollo migration. Apollo's person and company filters
-line up almost one-to-one with Amplemarket searcher fields — title, seniority,
-department, location, industry, headcount, revenue, technologies, keywords all have
-direct equivalents in the field table in SKILL.md. Filters reading a synced CRM field
-map to **crm** filters and need the CRM integration.
+This is the easy half of an Apollo migration. Apollo's person and company filters —
+title, seniority, department, location, industry, headcount, revenue, technologies,
+keywords — are ordinary audience criteria. State them in the prompt in plain English
+and let the planner resolve field names.
 
-Apollo-native concepts don't carry: contact stage, list membership as a filter, owner,
-Apollo score, email status, and buying-intent score. Buying intent is the one that
-bites, because it's often the whole point of the play — there's no Amplemarket
-equivalent as a filter or a trigger. If a play's filters rest entirely on Apollo-native
-values, the migrated workflow is broader than the original; flag it, since broader
-means more contacts enrolled.
+**Apollo-native filter values** need capturing carefully, because they're computed by
+Apollo and don't exist outside it:
+
+| Filter | What it actually is |
+| --- | --- |
+| **Buying-intent score** | Apollo's own intent model over its data. Often the entire point of the play. |
+| **Apollo score** | Apollo's fit ranking. |
+| **Contact stage** | An Apollo-configured pipeline label, same shape as Salesloft's Person Stage. |
+| **Email status** | Apollo's deliverability verdict on the address. |
+| **List membership** | Which Apollo list the person is on. |
+| **Owner** | The assigned Apollo user. |
+
+Buying intent is the one that bites — a play whose filters rest entirely on it doesn't
+have an audience definition that travels, and the migrated version will enroll a much
+wider group. That's a loss-report line, and wider means more contacts.
 
 ## Actions
 
-| Apollo action | Amplemarket action |
+| Apollo action | What it does |
 | --- | --- |
-| Add to sequence | `add_to_sequence` |
-| Remove from sequence | `remove_from_sequence` |
-| Mark sequence finished | `complete_sequence` |
-| Add to list | `add_to_lead_list` |
-| Remove from list | `remove_from_lead_list` |
-| Mark do-not-contact / opt out | `add_to_exclusion_list` |
-| Enrich email · Enrich phone | `enrich_data` (one action covers both) |
-| Update a CRM field / push to CRM / change CRM stage | `update_crm_fields` (CRM-gated, updateable fields only) |
-| Create a task | `create_one_off_task` — Apollo's assignment to a specific rep has no equivalent |
-| Send a webhook / HTTP request | `http_request` (auth, headers, and testing are editor-owned) |
-| Send email or Slack notification | No equivalent |
-| Assign or route to a rep / change owner | No equivalent |
-| Convert to an opportunity, create a deal | No equivalent |
-| AI-drafted email actions | No equivalent |
+| Add to sequence · Remove from sequence · Mark sequence finished | sequence membership |
+| Add to list · Remove from list | list membership |
+| Mark do-not-contact / opt out | suppresses future outreach |
+| Enrich email · Enrich phone | reveals contact data |
+| Update a CRM field / push to CRM / change CRM stage | writes to the connected CRM |
+| Create a task | optionally assigned to a specific rep |
+| Send a webhook / HTTP request | posts to an external URL |
+| Send email or Slack notification | alerts a person or channel |
+| Assign or route to a rep / change owner | ownership |
+| Convert to an opportunity, create a deal | creates CRM records |
+| AI-drafted email actions | Apollo composes the message |
 
-Notification actions are worth a sentence rather than a silent drop: nearly every
-Apollo play ends in a Slack alert, and its absence is the change users notice first.
-A Slack post can sometimes be rebuilt as an `http_request` to an incoming webhook —
-propose it as the user's decision, and configure the URL in the editor rather than
-putting it in the prompt.
+Two notes on capture. **Notification actions** end nearly every Apollo play, and their
+absence is the change users notice on day one — capture the channel and what the
+message says, because a Slack alert can sometimes be rebuilt as an HTTP request to an
+incoming webhook, and that's the user's decision to make with real information.
+**Record-creation and ownership actions** create or re-own CRM records; workflows that
+enroll contacts have nothing to act on there, so it's a structural mismatch rather
+than a missing feature.
 
-## No equivalent
+## The loss report for an Apollo migration
 
-- **Triggers:** every signal (job change, funding, hiring, headcount growth,
-  technology added, website visits, buying intent, news, deal stalls), email opened or
-  clicked, meeting rescheduled or canceled, scheduled runs, contact stage changed.
-- **Filters:** buying-intent score, contact stage, list membership, owner, Apollo
-  score, email status.
-- **Actions:** notifications, owner assignment and routing, record and deal creation,
-  AI email drafting.
+- **The signal's timing.** The single biggest one. "Real-time when they change jobs"
+  quietly becomes "whenever someone refreshes the search". Name the cadence and name
+  who owns it.
+- **Buying intent and Apollo score.** If they gated the play, the rebuilt audience is
+  broader — sometimes dramatically. Quantify it if the user can.
+- **The Slack alert.** Say explicitly that nobody gets pinged any more, and offer the
+  webhook rebuild.
+- **Rep assignment on tasks.** A task that used to land on a named rep and now doesn't
+  is an operational change.
+- **Contact stage.** Same as Salesloft's Person Stage — if it fed reporting or list
+  filters inside Apollo, that reporting needs another home.
 
 ## Worked example
 
@@ -127,26 +139,26 @@ customers; filters `Title contains "VP"` and `Company headcount 200-5000`; actio
 `Enrich email`, `Add to list`, `Add to sequence "Champion re-engagement"`, and
 `Send Slack notification`.
 
-The trigger doesn't migrate, so the play splits in two. The part that is a workflow:
+The trigger is a signal, so the play splits: the detection half becomes a refreshed
+search feeding a lead list, and the automation half watches that list.
 
 > When a contact is added to the "Champion job changes" lead list, enrich their data
 > and add them to the "Champion re-engagement" sequence. Only apply this to contacts
 > whose job title contains "VP" and whose company has between 200 and 5000 employees.
 > Enroll each contact once.
 
-**Gaps:**
+**What you lose by moving this**
 
-- Job change trigger — no Amplemarket workflow trigger covers signals — rebuild the
-  detection half as a search on `person_recently_changed_company` over the
-  past-customer list, refreshed on whatever cadence the team wants, feeding the lead
-  list this workflow watches. Apollo fires inside its own detection window; this fires
-  when the search is refreshed.
-- Slack notification — no notification action — dropped; rebuildable as an
-  `http_request` to an incoming webhook if the team wants it.
+- Apollo's job-change detection — Apollo fires inside its own detection window, a
+  refreshed search fires when someone refreshes it — agree the cadence and who owns
+  it, because "real-time" is quietly becoming "weekly".
+- Slack post to #sales-wins — nothing in the migrated workflow notifies anyone — the
+  alert the team actually watches disappears on day one; rebuild it as an HTTP request
+  to an incoming webhook, or tell the channel it's going away.
 
 ## Sources
 
 - [Workflows Overview](https://knowledge.apollo.io/hc/en-us/articles/14296116597901-Workflows-Overview) and [Create a Workflow](https://knowledge.apollo.io/hc/en-us/articles/4413804036109-Create-a-Workflow) — trigger → conditions → actions, event-driven or scheduled
-- [Engage decision makers who just changed jobs](https://www.apollo.io/academy/plays/engage-decision-makers-who-just-changed-jobs) — a signal play's trigger, filters, and action list (notify, enrich email, enrich phone, add to list, add to sequence)
+- [Engage decision makers who just changed jobs](https://www.apollo.io/academy/plays/engage-decision-makers-who-just-changed-jobs) — a signal play's trigger, filters, and action list
 - [Apollo release notes](https://knowledge.apollo.io/hc/en-us/articles/27365542998925-Release-Notes-2024) — meeting triggers (booked, rescheduled, canceled) and Deal Plays
 - [Manage Sequence Rulesets](https://knowledge.apollo.io/hc/en-us/articles/4409396858509-Manage-Sequence-Rulesets) — sequence-level automation, distinct from plays

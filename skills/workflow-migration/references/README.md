@@ -1,9 +1,15 @@
 # Provider references
 
 One file per source tool, read on demand by [SKILL.md](../SKILL.md) at step 1 of a
-migration. Each file covers where the automations live, how to decompose one, and
-how its parts map onto the Amplemarket vocabulary — that vocabulary itself lives in
-SKILL.md and is not repeated here.
+migration.
+
+**These files describe the source tool, not Amplemarket.** They cover where the
+automations live, how to decompose one, what each provider-native concept actually
+means, and what stops working in the source tool once the automation is switched off.
+They deliberately contain **no mapping tables onto Amplemarket triggers, actions, or
+fields** — `create_workflow` resolves those against the live catalogue for the account,
+and anything written here is a snapshot that goes stale. See the division of labour
+section in SKILL.md for why this rule exists and what it cost when it was broken.
 
 | Provider | What gets migrated | File |
 | --- | --- | --- |
@@ -11,32 +17,36 @@ SKILL.md and is not repeated here.
 | Salesloft | Automation Rules (Settings → Automation Rules) | [salesloft.md](salesloft.md) |
 | Apollo | Workflows and Plays | [apollo.md](apollo.md) |
 
-Each file ends with the vendor documentation it was written from. When a provider
-ships UI changes, re-read those sources before trusting a mapping — the tables record
-what the vendor documents, and vendors move faster than this folder.
+Each file ends with the vendor documentation it was written from. When a provider ships
+UI changes, re-read those sources before trusting a description.
 
 ## A provider with no reference file
 
-Don't guess at a mapping table. Work from the source automation in front of you:
+Work from the source automation in front of you:
 
 1. **Read the vendor's own documentation first.** Every file here was written from the
    vendor's docs rather than from memory, and doing that caught real errors — Outreach
    triggers fire on object-plus-change-type rather than on semantic events, and
    Salesloft's action list is far shorter than it looks. Guessing a roster produces
-   mappings that read fine and don't exist.
+   descriptions that read fine and don't exist.
 2. **Decompose it into the five parts every one of these tools has** — the event that
    fires it, what it acts on (person vs company), whether it can re-fire for the same
    target, the conditions that gate it, and the ordered actions it runs.
-3. **Map each part** onto the vocabulary in SKILL.md, semantically. An event whose
-   meaning doesn't match any Amplemarket trigger is a gap, not a near-miss to round to.
-4. **Treat anything that touches deals, opportunities, tickets, owners, tags, or
-   notifications as a gap by default** — those recur in every tool and none of them
-   have an Amplemarket workflow equivalent. Same for record-shaped automations
-   (HubSpot deal workflows, Salesforce Opportunity flows): Amplemarket workflows
-   enroll contacts, so only person- and company-level automations map at all.
+3. **Describe each part in plain English**, capturing configured values verbatim.
+   Don't decide what it maps to; that's `create_workflow`'s job, and it has the
+   catalogue.
+4. **Look for the parts that don't travel.** Two recurring shapes:
+   - **Provider-computed values** — intent scores, fit rankings, stage labels, tags,
+     owners. These are produced by the source tool's own data or configuration. Capture
+     what they *mean* and what reads them, because that's the loss report.
+   - **Record-shaped automations** — deal and opportunity flows, ticket automation,
+     record creation, ownership routing. Amplemarket workflows enroll contacts, so
+     these have no target to act on. That's a structural mismatch, and it's worth
+     saying at scope time before a generation is spent on it.
 5. **Write the reference file afterwards** if the provider is going to come up again.
    Follow the section order the existing files use so they stay comparable, cite the
-   vendor pages you worked from, and only record mappings those pages support.
+   vendor pages you worked from, and describe only the source tool — if you find
+   yourself writing an Amplemarket column, stop.
 
 ## Reading the source
 
@@ -52,3 +62,10 @@ step 3 of the skill won't let capture start without one.
 
 Whatever the source, extract condition values and action scopes verbatim, and record
 only the *presence* of a credential, never its value.
+
+## Keeping these honest
+
+When a migration ends and the generated draft differs from what the reference implied,
+that's signal. Update the file. The most valuable correction is deleting something —
+if a reference file is asserting what Amplemarket can or can't do, it has drifted back
+into the job it isn't supposed to have.

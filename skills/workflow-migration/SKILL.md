@@ -4,7 +4,7 @@ description: >
   Create an Amplemarket workflow from natural language, or migrate an existing automation from Outreach, Salesloft, or Apollo into an Amplemarket workflow draft. Use when asked to build a workflow, port a trigger/rule/play into Amplemarket, inspect what an existing workflow does, or judge whether an automation is expressible in Amplemarket.
 metadata:
   author: amplemarket
-  version: "2.0.0"
+  version: "3.0.0"
   category: "Workflows"
 compatibility: Requires the Amplemarket MCP server; migrations also need a browser tool that can read authenticated pages
 ---
@@ -12,12 +12,75 @@ compatibility: Requires the Amplemarket MCP server; migrations also need a brows
 # Workflow Migration
 
 Turn a request — a sentence from the user, or an automation that already runs in
-another tool — into an Amplemarket workflow draft, then report honestly on what
-did and didn't carry over.
+another tool — into an Amplemarket workflow draft, then report honestly on what the
+user loses by moving it.
 
 Both entry paths converge on the same call: everything ends as one natural-language
-prompt handed to `create_workflow`, which runs the Amplemarket AI Workflows agent
-and leaves a draft in the dashboard for a human to review and activate.
+prompt handed to `create_workflow`, which runs the Amplemarket AI Workflows agent and
+leaves a draft in the dashboard for a human to review and activate.
+
+## Division of labour
+
+Read this before anything else. It's the thing this skill most easily gets wrong.
+
+**`create_workflow` owns the Amplemarket side.** The planner behind it has the live
+catalogue for *this account* — which triggers exist, which actions exist, which
+searcher and CRM fields are available, which sequences, lead lists, tags, and call
+dispositions are configured, and what the account's rollout state gates. It knows all
+of that better than any table written here, because a table here is a snapshot and the
+catalogue is the thing itself.
+
+So **do not pre-map the source onto Amplemarket trigger, action, or field names.**
+Don't decide in advance that something "has no equivalent." Describe what the source
+automation does, in plain English, faithfully, and let the planner answer whether it's
+expressible. When it isn't, `failure_reason` and `affected_steps` say so in the
+planner's own words — which is authoritative in a way a hand-maintained mapping table
+never is.
+
+This was learned the hard way: an earlier version of this skill asserted that call
+disposition had no Amplemarket equivalent and warned that migrated call rules would
+over-enroll. It was wrong — `event_call_logged` takes `phone_call_trigger_ids`, and
+had for a long time. The mapping table didn't just fail to help, it talked the agent
+out of a correct migration.
+
+**This skill owns the source side**, which the planner cannot see at all:
+
+- Where the automations live and how to read them
+- What a provider-native concept actually *means*, so it can be described in English
+- Which automations shouldn't be migrated in the first place (CRM-sync housekeeping,
+  record-creation plumbing)
+- **The loss report** — what stops working *in the source tool* once the automation is
+  switched off. The planner never sees the Salesloft rule, so it can never tell the
+  user that a field it no longer writes was feeding their reporting.
+
+That last one is the real deliverable. A migration that produces a working draft and
+no loss report is half-done.
+
+## CRM fields are the one thing to resolve first
+
+A field name the account's catalogue doesn't have costs you the field, not the draft: the
+planner keeps the step, leaves the field unset, and hands the selection back as an editor
+task. That's the floor, not the target — every unmatched field is one more thing the user
+has to finish before the workflow can run. Source-native names rarely survive: Salesloft's
+**Person Stage** isn't a Salesforce field, and the account using it wrote `Lead_Status__c`
+and `Reason_for_Not_Accepting__c` instead.
+
+So harvest before writing. `get_workflow` on several existing workflows gives you exact
+`field_name`, `field_type`, and picklist values from their `update_crm_fields` steps and
+`crm` filters — the account's own vocabulary. Match on what a field *means*, not how
+it's spelled: names run a word or two off the source's, and one source field often lands
+on two, a status plus a separate reason.
+
+This isn't pre-mapping. Triggers and actions stay in English for the planner to pick;
+CRM field names are account data, and quoting one you read out of that account's own
+workflows is evidence.
+
+**When the harvest doesn't settle it, under-specify.** Name the concept and leave the
+specifics out — "set the contact's lead status CRM field to the rejected value". That
+returns `needs_configuration`: a draft with the trigger, filters, and step order built,
+and the field selection waiting in `affected_steps` as an editor task. Describing the
+concept and asserting a name that doesn't exist land in the same place, so describe it
+and let the report say so plainly rather than shipping a name you invented.
 
 ## Prerequisites
 
@@ -50,10 +113,15 @@ they may be exposed prefixed, e.g. `mcp__claude_ai_Amplemarket__create_workflow`
 `list_sequences` and `list_lead_lists` are useful alongside them for resolving
 sequence and list names the workflow will reference.
 
+Reading existing workflows with `list_workflows` / `get_workflow` is the one reliable
+way to see what this account actually supports. Two `event_call_logged` drafts with
+`phone_call_trigger_ids` populated is real evidence about dispositions; a table in a
+reference file is not. Prefer the evidence.
+
 ### Steps
 
 1. **Pick the path.** If the user is describing what they want in their own words,
-   go to step 5. If they're pointing at an automation that already exists somewhere
+   go to step 5 — steps 2-4 are migration-only. If they're pointing at an automation that already exists somewhere
    else, read the matching file in `references/` first —
    [outreach.md](references/outreach.md), [salesloft.md](references/salesloft.md),
    [apollo.md](references/apollo.md). For a provider with no reference file, follow
@@ -81,9 +149,8 @@ sequence and list names the workflow will reference.
 
     - **"Migrate everything."** Enumerate the provider's automations list first and
       present the scope table below. Get a yes on the set before touching any of
-      them, and flag anything you can already tell won't migrate (a deal-stage
-      trigger, a signal trigger) so the user can drop it now rather than after a
-      wasted generation.
+      them, and flag anything the reference file says is *provider-side* housekeeping
+      — a CRM-sync rule, a record-creation play — so the user can drop it now.
     - **Specific automations.** Resolve each one the user named to exactly one URL.
       If a name matches several entries, matches none, or the list isn't reachable,
       **ask the user for the URL** — a name alone is not a match.
@@ -95,84 +162,107 @@ sequence and list names the workflow will reference.
     | 1 | [name as the provider shows it] | [direct URL] | Migrate |
     | 2 | [name] | [URL] | Skip — [reason] |
 
-    Migrate one at a time, in the order of that table, running steps 4-11 per
+    Migrate one at a time, in the order of that table, running steps 4-10 per
     automation. One source automation is one `create_workflow` call, and each call
     counts against the daily limit — so if the set is bigger than what's left today,
     say so upfront and agree where to stop rather than discovering it mid-run.
 
 4. **Capture the source** (migration only). Each reference names the parts to
-   extract. Take values verbatim, including condition values and action scopes. If
-   the source exposes a credential — an API key, a bearer token, a signed URL —
-   record only that authentication is present. Never transcribe the value.
+   extract. Take values verbatim, including condition values and action scopes,
+   because the prompt is going to quote them. If the source exposes a credential — an
+   API key, a bearer token, a signed URL — record only that authentication is present.
+   Never transcribe the value.
+
+   Capture what the automation *does*, not what you think Amplemarket will call it.
+   "Sets Person Stage to Rejected - Bad Account Fit, which syncs onward to
+   `Lead_Status__c` in Salesforce" is a capture. "`update_crm_fields`" is a guess.
 
 5. **Check what already exists.** Call `list_workflows` with a `name` filter on a
    distinctive word from the request. If something close is already there, call
    `get_workflow` on it and ask the user whether they want a new workflow or an
    edit to that one — this skill can only create, so an edit is a dashboard task.
-   An existing workflow is also the best evidence of how this account phrases things.
+   An existing workflow is also the best evidence of how this account phrases things,
+   and of which trigger settings it actually has configured.
 
-6. **Map to Amplemarket vocabulary.** The vocabulary section below is the target
-   language; the provider reference gives the mapping. Where a source concept has
-   no clean target, do **not** substitute something adjacent — record it as a gap.
-   Silently replacing an unsupported action with `create_one_off_task` is the
-   failure mode to avoid; the planner is instructed to refuse that substitution
-   anyway, so it just wastes a generation.
+   **If the source automation writes a field, harvest CRM names here** — call
+   `get_workflow` on several existing workflows, not just the closest match, and read
+   every `update_crm_fields` step and `crm` filter for `field_name`, `field_type`, and
+   the picklist values in use. This is the step that decides whether the generation
+   succeeds; see [CRM fields are the one thing to resolve first](#crm-fields-are-the-one-thing-to-resolve-first).
 
-7. **Write the prompt.** One short paragraph of plain English, phrased as a user
-   would phrase it, using the mapped concepts and naming concrete resources
-   (sequence names, list names) exactly as the user names them:
+6. **Write the prompt.** One short paragraph of plain English, phrased as a user
+   would phrase it, naming concrete resources (sequence names, list names,
+   dispositions, CRM fields) exactly as the source names them:
 
-   > When `<trigger event>` for a `<contact | account's contacts>`, `<action(s)>`.
-   > Only apply this to `<contacts/accounts matching the conditions>`.
-   > `<Enroll each contact once | re-trigger every time>`.
+   > When `<trigger event, in words>` for a `<contact | everyone at the account>`,
+   > `<action(s), in words>`. Only apply this to `<contacts/accounts matching the
+   > conditions>`. `<Enroll each contact once | re-trigger every time>`.
 
    Rules:
    - One source automation → one prompt → one workflow. Migrate them individually.
+   - **Describe, don't map.** Write "when a call is logged with the disposition
+     'Connected - Bad Account Fit'", not "`event_call_logged` with
+     `phone_call_trigger_ids`". The planner resolves names against the live catalogue;
+     an enum you half-remember will be wrong more often than the English will.
    - State conditions as audience filters ("whose title contains VP", "whose company
      is in Technology"), not as raw `field=value` rows.
    - Chain multiple actions in execution order.
-   - Leave editor-fillable choices (exact mailbox, unnamed sequence) unstated — the
-     planner defers those rather than guessing.
-   - Keep unsupported parts *out* of the prompt. They go in the gap list.
+   - Quote provider-native labels verbatim and let the planner match them. If the
+     account has that disposition, tag, or field, it will find it; if it doesn't, it
+     defers the choice to the editor. Both outcomes beat you deciding.
+   - **Never pass a source-native CRM field name through.** Use a name harvested from
+     this account's own workflows, or describe the field by meaning and leave the
+     selection to the editor. "Person Stage" in a prompt buys nothing the description
+     wouldn't, and reads to the user as a field this account has.
+   - Leave genuinely open choices (exact mailbox, unnamed sequence, an unresolved CRM
+     field or picklist value) unstated — the planner defers those rather than guessing,
+     and a deferred choice costs a line in **Before activating**, not a generation.
+   - Keep out anything the source automation didn't ask for. Extra actions "while
+     we're here" are new scope, not a migration.
    - Never include credential values, and never invent URLs, HTTP methods, JSON
      paths, field types, or captured-field names the source didn't provide.
 
-8. **Present the plan and get a go-ahead.** Always this format, whether the source
+7. **Present the plan and get a go-ahead.** Always this format, whether the source
    is a sentence or another tool — creation counts against a daily per-user limit
    and leaves a draft someone has to clean up, so nothing gets created unseen:
 
     **Workflow plan — [name]** · source: [URL from the scope table]
 
-    | Part | Source | Amplemarket |
+    | Part | Source, verbatim | How the prompt asks for it |
     | --- | --- | --- |
-    | Trigger | [source event, verbatim] | `[trigger]` |
-    | Scope | [source target] | `contact` / `account_contacts` |
-    | Re-enrollment | [source frequency] | `never` / `always` |
-    | Conditions | [source rows, verbatim] | `[fields]` |
-    | Actions | [source actions, in order] | `[subtypes, in order]` |
+    | Trigger | [source event] | [the phrase used in the prompt] |
+    | Scope | [source target] | one contact / everyone at the account |
+    | Re-firing | [source frequency] | once per contact / every time |
+    | Conditions | [source rows] | [the audience phrasing] |
+    | Actions | [source actions, in order] | [the phrasing, in order] |
+
+    The right-hand column is the English going into the prompt, **not** an enum
+    mapping. Don't put trigger or action identifiers in it — what the planner picks is
+    its call, and step 10 reports what it actually built.
 
     **Prompt**
 
-    > [the paragraph from step 7, verbatim — this is what gets sent]
+    > [the paragraph from step 6, verbatim — this is what gets sent]
 
-    **Gaps** — one line each, as `[source part] — [why] — [what happens instead]`,
-    or the single line `None — every part of the source has an equivalent.` Never
-    leave this section out; an empty gap list is itself the finding.
+    **What you lose by moving this** — see the section below. Never leave it out; an
+    empty list is itself a finding, and it's the part of the plan the planner can't
+    produce for you.
 
     Then ask whether to create it. For a fresh build with no source, drop the source
-    URL and the Source column, and keep the rest. When migrating a set, one plan per
-    automation — never a merged plan covering several, since each one becomes its own
-    workflow and the user approves them one at a time.
+    URL and the Source column, and skip the loss report — there's nothing being left
+    behind. When migrating a set, one plan per automation — never a merged plan
+    covering several, since each one becomes its own workflow and the user approves
+    them one at a time.
 
-9. **Create.** Call `create_workflow` with the approved `prompt`. It returns
+8. **Create.** Call `create_workflow` with the approved `prompt`. It returns
    `{id, status: "planning", message}`. Keep that `id` — it's the creation-request
    ID, not a workflow ID.
 
-10. **Poll.** Wait at least 30 seconds, then call `get_workflow_creation` with that
-    `id`. While `status` is `planning` or `generating`, wait another 30 seconds and
-    poll again. Say you're waiting rather than going silent.
+9. **Poll.** Wait at least 30 seconds, then call `get_workflow_creation` with that
+   `id`. While `status` is `planning` or `generating`, wait another 30 seconds and
+   poll again. Say you're waiting rather than going silent.
 
-11. **Report the result.** Read `status` first, then `outcome`. On `completed`, call
+10. **Report the result.** Read `status` first, then `outcome`. On `completed`, call
     `get_workflow` with `workflow_id` so the summary describes the draft that exists
     rather than the one you asked for. Report in this format:
 
@@ -185,104 +275,95 @@ sequence and list names the workflow will reference.
     | Workflow | [name] (`[workflow_id]`) |
     | Link | [workflow_url] |
     | Source | [provider automation URL, migrations only] |
-    | Trigger | `[trigger types from get_workflow]` |
+    | Trigger | [trigger types from `get_workflow`] |
     | Filters | [enrollment filters, in words] |
     | Steps | [numbered, in execution order, each as "action — what it does"] |
     | State | **Draft** — nobody is enrolled and nothing runs until it's activated in Amplemarket |
 
+    This table reports what `get_workflow` returned. Here the enum names are fine —
+    they're observed facts about a draft that exists, not predictions.
+
+    Compare it against the plan and say so if the planner made a different call than
+    the prompt implied. That divergence is information: it's usually the catalogue
+    correcting an assumption, and it's how this skill's provider references get
+    better.
+
     **Before activating** — always present, numbered, one item per task. It holds
     every `affected_steps` entry rewritten as the concrete editor task it implies
-    (configure authentication, send a test request, select captured fields), plus
-    every gap carried forward from step 8 so the plan and the result say the same
-    thing. If there's genuinely nothing, the one item is `Review the draft against
-    your intent, then activate it.`
+    (configure authentication, send a test request, select a call disposition, map a
+    CRM field), plus every item from the loss report so the plan and the result say
+    the same thing. If there's genuinely nothing, the one item is `Review the draft
+    against your intent, then activate it.`
 
     On `failed`, keep the same table with Status, Outcome, and a Reason row holding
     `failure_reason` verbatim — it carries the planner's own account of what couldn't
-    be built — and follow it with what to change and whether it's worth another
-    attempt. On `canceled`, report it and offer to retry. Never describe a draft as
-    live, and never round `needs_configuration` up to done.
+    be built, which is the authoritative answer on what Amplemarket can't express —
+    and follow it with what to change and whether it's worth another attempt. On
+    `canceled`, report it and offer to retry. Never describe a draft as live, and
+    never round `needs_configuration` up to done.
 
     When a set was migrated, close with one **Migration summary** table repeating the
     scope table's rows plus an Outcome and a link per row, so the user has a single
     place that says what came across and what didn't.
 
-### Important Notes
+## Writing the loss report
+
+This is the deliverable the planner cannot produce. It is **not** a list of things
+Amplemarket lacks — that's the planner's job, and it answers it in `failure_reason`
+and `affected_steps`. It's a list of what stops happening **in the source tool** when
+this automation is switched off.
+
+One line each, as `[source part] — [what breaks] — [what to do about it]`:
+
+- **A field that stops being written.** The strongest example. A Salesloft rule
+  setting Person Stage may be feeding dashboards, cadence entry rules, and filters
+  that have nothing to do with the migrated workflow. Even when the equivalent write
+  migrates perfectly, the *source* field goes stale. Name what reads it.
+- **A sync chain that gets shorter.** When the source writes field A which syncs to
+  field B, and the workflow writes B directly, anything keyed on A is now orphaned.
+  The migration looks lossless and isn't.
+- **Volume changes in either direction.** A condition the prompt couldn't express
+  means more contacts enrolled; a trigger that only covers half the source's cases
+  means fewer. Both matter, and "more" is usually the one that surprises people.
+- **Timing changes.** A signal-driven play that becomes a refreshed-list workflow
+  fires on a different clock, and somebody now owns that refresh.
+- **Anything the source did that isn't outreach.** Creating CRM records, setting
+  owners, posting notifications. If it mattered, it needs another home before the
+  source automation is turned off.
+
+If the source automation genuinely leaves nothing behind, the line is
+`Nothing — the source automation's full effect is reproduced.` Say it explicitly.
+
+## Facts about Amplemarket workflows worth knowing
+
+Deliberately short. These are behaviours the planner won't volunteer and that don't
+drift the way the catalogue does. Everything catalogue-shaped — which triggers,
+actions, filters, and fields exist — is intentionally **not** listed here.
 
 - **Nothing here activates a workflow.** Generated workflows are always drafts, and
   activation is a manual dashboard step by design. Don't imply otherwise.
 - **Creation is gated three ways.** The user must be an account admin, must have the
   `ai_assisted_workflows` rollout, and must be under the daily generation limit. Each
   failure returns a specific error — surface it as-is instead of retrying.
-- **`webhook_received` and `http_request` generate partially.** Keep the supported
-  step in the prompt with every grounded public value (URL, method, payload shape,
-  failure behavior); authentication, headers, the test request, and captured-field
-  selection are editor-owned. Expect `needs_configuration`, not a failure. Never
-  request captured-field mappings — those only exist after a real test in the editor.
-- **CRM capabilities are account-gated.** `event_crm_*` triggers, `crm` filters, and
-  `update_crm_fields` only work when the account has a HubSpot or Salesforce
-  integration configured. Without one, the planner drops them into `affected_steps`.
+- **Workflows enroll contacts.** Scope is one contact or everyone at an account.
+  Automations shaped around deals, opportunities, or tickets don't have a target to
+  enroll, which is a structural mismatch rather than a missing feature.
+- **Webhook and HTTP steps generate partially.** Keep the supported step in the prompt
+  with every grounded public value (URL, method, payload shape, failure behaviour);
+  authentication, headers, the test request, and captured-field selection are
+  editor-owned. Expect `needs_configuration`, not a failure. Never request
+  captured-field mappings — those only exist after a real test in the editor.
+- **A webhook trigger must be the workflow's only trigger.**
+- **CRM capabilities are account-gated.** CRM triggers, CRM filters, and CRM field
+  writes need a configured HubSpot or Salesforce integration. Without one the planner
+  drops them into `affected_steps` — which is how you find out, rather than by
+  checking first.
 - **`get_workflow` redacts on purpose.** Request headers and captured test response
   bodies are stripped; you get header *names* only. Don't try to route around that.
 
-## Amplemarket workflow vocabulary
-
-This is the target language for every migration. The account's actual catalogue can
-be narrower than the full enum (CRM gating, rollout state), so treat this as what
-*can* exist rather than a promise for a given account.
-
-**Triggers** (`WorkflowTriggerType`) — `event_meeting_booked`, `event_email_replied`,
-`event_email_bounced`, `event_linkedin_replied`,
-`event_linkedin_connection_accepted`, `event_call_logged`,
-`event_sequence_started`, `event_sequence_lead_added_to_sequence`,
-`event_sequence_completed_with_no_reply`, `event_crm_contact_created`,
-`event_crm_contact_updated`, `event_crm_account_created`,
-`event_crm_account_updated`, `event_crm_lead_created`, `event_crm_lead_updated`,
-`webhook_received`.
-
-`event_sequence_completed_with_no_reply` only covers sequences that finish *without*
-a reply. There is no trigger for a sequence finishing after a reply — a source rule
-that fires on any "sequence finished" state loses that half of its volume, and that
-belongs in the gap list rather than being quietly folded into the no-reply event.
-`webhook_received` must be the workflow's only trigger.
-
-**Actions** (`WorkflowActionSubtype`) — `add_to_sequence`, `remove_from_sequence`,
-`complete_sequence`, `add_to_lead_list`, `remove_from_lead_list`,
-`add_to_exclusion_list`, `update_crm_fields`, `enrich_data`, `create_one_off_task`,
-`http_request`.
-
-**Structure** — steps are `action`, `condition`, `delay`, or `exit` nodes.
-`WorkflowTargetScope` is `contact` or `account_contacts` (every contact on the
-account). `WorkflowReenroll` is `never` (each target enrolls once) or `always`.
-
-**Filters** (`WorkflowFilterType`) — `searcher` (person/company attributes),
-`crm` (CRM record fields, CRM-gated, operators `eq`, `not_eq`, `in`, `not_in`,
-`contains`, `contains_any`, `is_empty`, `gt`, `gte`, `lt`, `lte`, …), `composite`,
-`dynamic_fields`.
-
-Common searcher fields, which most condition rows land on:
-
-| Intent | Field |
-| --- | --- |
-| Job title | `person_titles` (`person_titles_exact_match` when the operator is "is") |
-| Seniority | `person_seniorities` |
-| Person location | `person_location` (object list; set the `country` key) |
-| Recently changed company | `person_recently_changed_company` |
-| Industry | `company_industry` |
-| Headcount | `company_size` or `company_headcount` |
-| Company location | `company_location` (object list; set the `country` key) |
-| Revenue | `company_revenue_ranges` |
-| Technologies | `company_technology` |
-| Keywords | `company_keywords` |
-| Funding | `company_last_funding_types`, `company_last_funding_amount`, `company_total_funding_amount` |
-| Hiring signal | `company_has_recent_job_openings`, `company_recent_job_openings_seniorities` |
-
-Don't invent field names. If you're unsure a field exists, describe the intent in
-words in the prompt and let the planner resolve it.
-
-These enums can drift. Prefer the vocabulary above, and when unsure whether a
-field or trigger exists, describe the intent in the prompt and let the planner
-resolve it rather than inventing names.
+The catalogue drifts, so treat the vocabulary above as a guide rather than a
+contract. When you're unsure whether a field or trigger exists, describe the intent
+in the prompt and let the planner resolve it rather than inventing names.
 
 ## Examples
 
@@ -293,83 +374,68 @@ resolve it rather than inventing names.
 **What the skill does:**
 
 1. Calls `list_workflows` with `name: "repl"` — nothing similar exists.
-2. Calls `list_lead_lists` to confirm "Warm replies" is the exact list name.
-3. Maps: trigger `event_email_replied`, scope `contact`, actions `complete_sequence`
-   then `add_to_lead_list`.
-4. Presents the plan in the step 8 format — no Source column, since there's no source
-   — with this prompt and `Gaps — None`:
+2. Calls `list_lead_lists` to confirm "Warm replies" is the exact list name. This is
+   the one kind of pre-checking that pays: the planner can't invent a list that
+   doesn't exist.
+3. Presents the plan in the step 7 format — no Source column and no loss report, since
+   nothing is being left behind — with this prompt:
 
    > When a contact replies to an email, mark all of their active sequences as
    > finished and add them to the "Warm replies" lead list. Enroll each contact once.
 
-5. Calls `create_workflow`, waits 30 seconds, polls `get_workflow_creation` until
+4. Calls `create_workflow`, waits 30 seconds, polls `get_workflow_creation` until
    `status: "completed"`, `outcome: "doable"`.
-6. Calls `get_workflow` on `workflow_id` and reports in the step 11 format: the
-   trigger, the two steps, `workflow_url`, and the draft state.
+5. Calls `get_workflow` on `workflow_id` and reports in the step 10 format: the
+   trigger and steps the planner actually chose, `workflow_url`, and the draft state.
 
-### Example 2: Outreach trigger migration
+### Example 2: Salesloft rule where the loss report is the whole point
 
-**User prompt:** "Migrate our 'Stop All Sequences When Meeting is Booked' Outreach trigger."
+**User prompt:** "Migrate our 'Call Automation - Bad Account Fit' rule." *(screenshot)*
 
-**What the skill does:**
+**Source, captured verbatim:** trigger `When a call is logged for a person`; criterion
+`Disposition equal "Connected - Bad Account Fit"`; action `Set Person Fields` →
+`Person Stage = "Rejected - Bad Account Fit"`. The user says nothing about whether
+Person Stage syncs anywhere, and won't be asked — the account's workflows answer it.
 
-1. Reads [references/outreach.md](references/outreach.md), confirms the browser tool
-   is connected, and reads `web.outreach.io/admin-exp/triggers` — the list loads, so
-   the Outreach session is live.
-2. Finds one trigger matching that name and pins it to
-   `web.outreach.io/admin-exp/triggers/482/edit`. Had two triggers matched, or none,
-   it would have asked the user for the URL instead of picking one.
-3. Opens it and captures: Event `Meeting` / `Created or Updated` with a condition on
-   the meeting's booked state, Target `Prospect`, "Trigger only once per target"
-   checked, prospect condition `Title contains "VP"`, account condition
-   `Industry is "Technology"`, action `Stop Sequences` scoped to "mark all sequences
-   finished".
-4. Maps it, then presents the plan.
+**What the skill does:** reads [salesloft.md](references/salesloft.md), notes it's
+working from a screenshot, and harvests. `get_workflow` on four existing
+`event_call_logged` workflows yields the account's CRM vocabulary:
 
-**Example plan:**
-
-**Workflow plan — Stop All Sequences When Meeting is Booked** · source: `web.outreach.io/admin-exp/triggers/482/edit`
-
-| Part | Source | Amplemarket |
+| Field | Used as | Values |
 | --- | --- | --- |
-| Trigger | Meeting / Created or Updated, condition on booked state | `event_meeting_booked` |
-| Scope | Prospect | `contact` |
-| Re-enrollment | Trigger only once per target | `never` |
-| Conditions | Title contains "VP"; Industry is "Technology" | `person_titles`, `company_industry` |
-| Actions | Stop Sequences (mark all finished) | `complete_sequence` |
+| `Lead_Status__c` | written by all four | `Attempting to Contact`, `Recycled`, `BDR/Sales Rejected`, … |
+| `Reason_for_Not_Accepting__c` | written | `Bad Account Fit`, `Bad Person Fit` |
+| `Lead_Lifecycle_Stage__c` | read only, as a filter | `Customer`, `Opportunity`, `Rejected Lead` |
 
-**Prompt**
+The one Salesloft field becomes two, and the field that reads most like "Person Stage"
+is only ever *read* here — writing it would contend with whatever Salesforce automation
+owns it, which is a question for the user, not a decision for the skill.
 
-> When a meeting is booked with a contact, mark all of that contact's active sequences
-> as finished. Only apply this to contacts whose job title contains "VP" and whose
-> company is in the Technology industry. Enroll each contact only once.
+**Prompt:**
 
-**Gaps** — None — every part of the source has an equivalent.
+> When a call is logged for a contact with the disposition "Connected - Bad Account
+> Fit", update that contact's CRM record to set `Lead_Status__c` to "BDR/Sales Rejected"
+> and `Reason_for_Not_Accepting__c` to "Bad Account Fit". Enroll each contact once.
 
-On approval it calls `create_workflow`, polls to `completed` / `doable`, and reads the
-draft back with `get_workflow`.
+**What you lose by moving this**
 
-**Example result:**
+- Salesloft Person Stage — the workflow writes `Lead_Status__c` directly, so the
+  Salesloft stage field itself stops being set — anything in Salesloft reading Person
+  Stage (reporting, cadence entry rules, filters) goes stale once the rule is off.
+  Check what reads it before switching over.
+- One field becomes two — the Salesloft stage encoded rejection and reason in a single
+  label; the target splits them across `Lead_Status__c` and `Reason_for_Not_Accepting__c`
+  — any report expecting the combined string needs rewriting.
+- Re-firing volume — Salesloft re-fired on every matching call, the account's own
+  convention is `reenroll: never` — a contact who gets a second bad-fit call is no
+  longer re-stamped. Confirm which behaviour is wanted.
 
-**Workflow created — Stop All Sequences When Meeting is Booked**
+Note what the loss report is *not*: it says nothing about which Amplemarket action gets
+used, and nothing about `Lead_Lifecycle_Stage__c`. Whether a workflow may write that
+field is an ownership question for the user's RevOps, so it belongs in the plan as an
+open question — not in the loss report, and not silently resolved by the skill.
 
-| Detail | Value |
-| --- | --- |
-| Status | `completed` |
-| Outcome | `doable` |
-| Workflow | Stop All Sequences When Meeting is Booked (`wf_9dK2mQ`) |
-| Link | `app.amplemarket.com/workflows/wf_9dK2mQ` |
-| Source | `web.outreach.io/admin-exp/triggers/482/edit` |
-| Trigger | `event_meeting_booked` |
-| Filters | Job title contains "VP"; company industry is Technology |
-| Steps | 1. `complete_sequence` — marks every active sequence for the contact as finished |
-| State | **Draft** — nobody is enrolled and nothing runs until it's activated in Amplemarket |
-
-**Before activating**
-
-1. Review the draft against your intent, then activate it.
-
-### Example 3: A migration with real gaps
+### Example 3: A play whose trigger is the wrong shape
 
 **User prompt:** "Port our Apollo play that catches champion job changes — it enriches them, adds them to a list and a sequence, and pings #sales-wins."
 
@@ -377,19 +443,24 @@ draft back with `get_workflow`.
 
 1. Works from the pasted play rather than the browser, and says so — anything not in
    the paste is invisible to it, including filters the user didn't quote.
-2. Reads [references/apollo.md](references/apollo.md) and finds the trigger is the
-   half that doesn't migrate: no Amplemarket workflow trigger fires on a job-change
-   signal. The actions mostly do — `enrich_data`, `add_to_lead_list`,
-   `add_to_sequence` — so the play splits rather than dying.
-3. Presents a plan for a workflow triggered by list membership instead, with:
+2. Reads [apollo.md](references/apollo.md), which explains what an Apollo *signal*
+   trigger is: it fires inside Apollo's own detection window, off Apollo's data. That's
+   a statement about Apollo, and it's what makes the trigger hard to move — the
+   detection is the product, not the automation.
+3. Writes the prompt describing the whole play, signal trigger included, rather than
+   pre-emptively amputating it. The planner comes back `impossible` on the trigger,
+   with `failure_reason` naming it — the authoritative answer, and cheaper than a
+   mapping table that might have been wrong in either direction.
+4. Proposes the rebuild the reference suggests — a saved search on recent
+   company changes feeding a lead list the workflow watches — and re-runs step 7 with
+   a list-membership trigger and this loss report:
 
-   **Gaps**
-
-   - Job change trigger — Amplemarket has no signal triggers — the detection half becomes a search on `person_recently_changed_company` that feeds the lead list this workflow watches, refreshed on a cadence someone owns. Apollo fires inside its own detection window; this fires when the search is refreshed.
-   - Slack post to #sales-wins — no notification action — dropped; rebuildable as an `http_request` to an incoming webhook if you want it, with the URL configured in the editor rather than in the prompt.
-
-4. On the user's go-ahead, creates the reduced workflow and repeats both gaps under
-   **Before activating**, so the result says the same thing the plan did.
+   - Apollo's job-change detection — Apollo fires inside its own detection window;
+     a refreshed search fires when someone refreshes it — decide the cadence and who
+     owns it, because "real-time" quietly becomes "weekly".
+   - Slack post to #sales-wins — nothing in the migrated workflow notifies the team —
+     the alert everyone actually watches disappears on day one; rebuild it or tell
+     the channel.
 
 ## Troubleshooting
 
@@ -404,9 +475,12 @@ draft back with `get_workflow`.
 | "AI-assisted workflows are not enabled for this user." | The `ai_assisted_workflows` rollout is off for that user. Don't retry; it needs enabling first. |
 | Daily creation limit reached | The error names the limit and the reset time. Stop creating — batch the remaining migrations for after the reset rather than burning retries. |
 | `get_workflow_creation` still says `generating` after several polls | Normal for complex requests. Keep 30-second gaps between polls and keep the user posted; don't start a second `create_workflow` for the same request. |
-| `outcome: "impossible"` | The plan was rejected outright, and `failure_reason` carries the blocked steps' own explanation. Cut the request to its supported core and try once more, rather than rewording the same ask. |
-| `outcome: "needs_configuration"` | Expected for webhook and HTTP steps. Report `affected_steps` and hand the remaining editor work to the user; don't treat it as a failure. |
+| `outcome: "impossible"` | The planner rejected the plan and `failure_reason` explains which steps blocked it. Treat that as the definitive answer about Amplemarket's capabilities — **unless the blocked step is only about a CRM field or a missing CRM connection**, see the next row. Cut the request to its supported core and try once more, rather than rewording the same ask. |
+| `impossible` blamed on a CRM field or on the account having no CRM | That's a planner bug, not a capability limit — an unmatched field and an unconnected CRM are both supposed to come back as `needs_configuration` with the field deferred. Report it. Then retry with a field name harvested from the account's own workflows, or with the field described by meaning, and tell the user what's actually blocked rather than "Amplemarket can't do it". |
+| The harvested field names don't obviously match the source's | Match on meaning, not spelling — they differ by a word more often than they're absent, and one source field frequently splits into two (a status plus a reason). If two candidates fit and they imply different owners — one the workflows write, one only read — that's a question for the user, not a coin flip. |
+| `outcome: "needs_configuration"` | Expected whenever a step has editor-owned settings — webhook and HTTP steps, CRM field mappings, disposition and tag selection. Report `affected_steps` as editor tasks; don't treat it as a failure. |
+| You're unsure whether Amplemarket supports something | Don't guess in either direction, and don't answer from a reference file. Check `list_workflows` / `get_workflow` for an existing workflow that does it, or describe it in the prompt and let the planner rule. A wrong "it's not supported" costs more than a wasted generation. |
 | The generated draft doesn't match the intent | Read it with `get_workflow`, name the specific divergence, and create a new one from a sharper prompt. There's no edit tool — fixes are either a fresh generation or dashboard edits. |
-| Source automation fires on an event with no trigger equivalent | Say so plainly in the gap list. Email opened/clicked, meeting rescheduled or canceled, opportunity/deal stage changes, task completion, and non-CRM field changes have no Amplemarket trigger. |
-| Source automation fires on a signal (job change, funding, hiring, intent) | No Amplemarket workflow trigger covers signals, but the searcher has the same criteria as *filters*. The rebuild is a saved search or refreshed lead list feeding a sequence — a different mechanism with different timing. Propose it, don't pass it off as an equivalent. |
+| The planner built something the reference file said was impossible | The reference is stale. Trust the planner, tell the user, and fix the reference file — it's a provider file asserting something about Amplemarket, which it shouldn't be doing in the first place. |
+| The source automation is pure CRM-sync or record-creation housekeeping | It isn't outreach automation and usually has no workflow form at all. Recommend leaving it in the source tool or rebuilding it in the CRM, rather than producing a workflow that does the leftover half. |
 | A referenced sequence or list can't be found | Resolve names with `list_sequences` / `list_lead_lists` before creating. If it doesn't exist yet, create it first — the planner can't invent a resource that isn't there. |
