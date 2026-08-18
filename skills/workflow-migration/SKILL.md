@@ -1,10 +1,10 @@
 ---
 name: workflow-migration
 description: >
-  Create an Amplemarket workflow from natural language, or migrate an existing automation from Outreach, Salesloft, or Apollo into an Amplemarket workflow draft. Use when asked to build a workflow, port a trigger/rule/play into Amplemarket, inspect what an existing workflow does, or judge whether an automation is expressible in Amplemarket.
+  Create an Amplemarket workflow from natural language, or migrate an existing automation from Outreach, Salesloft, Apollo, or HubSpot into an Amplemarket workflow draft. Use when asked to build a workflow, port a trigger/rule/play into Amplemarket, inspect what an existing workflow does, or judge whether an automation is expressible in Amplemarket.
 metadata:
   author: amplemarket
-  version: "3.0.0"
+  version: "3.2.0"
   category: "Workflows"
 compatibility: Requires the Amplemarket MCP server; migrations also need a browser tool that can read authenticated pages
 ---
@@ -67,9 +67,18 @@ and `Reason_for_Not_Accepting__c` instead.
 
 So harvest before writing. `get_workflow` on several existing workflows gives you exact
 `field_name`, `field_type`, and picklist values from their `update_crm_fields` steps and
-`crm` filters — the account's own vocabulary. Match on what a field *means*, not how
-it's spelled: names run a word or two off the source's, and one source field often lands
-on two, a status plus a separate reason.
+`crm` filters — the account's own vocabulary. **Harvest only from workflows that aren't
+archived**, for the reason below: a retired workflow's field names may have been retired
+from the CRM with it. Match on what a field
+*means*, not how it's spelled: names run a word or two off the source's, and one source
+field often lands on two, a status plus a separate reason.
+
+**When the source tool is itself the CRM, the harvest gets easier but doesn't go away.**
+A HubSpot property *is* a CRM field, unlike Salesloft's Person Stage, so the source's
+internal name (`hs_lead_status`, not the `Lead status` label) is a real candidate rather
+than a vendor label — but only a candidate, since plenty of accounts run Salesforce with
+HubSpot as a marketing front end. Harvest first, then use the source name if the
+account's own workflows corroborate it.
 
 This isn't pre-mapping. Triggers and actions stay in English for the planner to pick;
 CRM field names are account data, and quoting one you read out of that account's own
@@ -113,10 +122,52 @@ they may be exposed prefixed, e.g. `mcp__claude_ai_Amplemarket__create_workflow`
 `list_sequences` and `list_lead_lists` are useful alongside them for resolving
 sequence and list names the workflow will reference.
 
+### Concurrency
+
+A set migration is mostly independent work, and the plain reading of the steps below —
+one automation all the way through, then the next — spends most of its wall clock
+waiting. The steps say where to batch; this is the policy behind them.
+
+**Independent reads go out together.** `list_workflows` across several distinctive
+words, `get_workflow` across the workflows you're harvesting, `list_sequences` and
+`list_lead_lists` alongside them — none of these depend on each other, so they belong in
+one message rather than one per turn.
+
+**Creation stays with the orchestrator, always.** The daily generation limit is a single
+shared budget, and a subagent can't see how much of it the others have spent. So
+`create_workflow` and `get_workflow_creation` are never delegated — whatever else fans
+out, the calls that spend the budget are made in one place that can count them.
+
+**Where subagents earn their place**, when a subagent tool is available and the work is
+bulky reading whose result you want as a summary rather than in context: vendor
+documentation for a provider with no reference file, one agent per page; capture from
+bulk pasted material — a long export, a folder of screenshots — one agent per
+automation, each returning the capture in the shape step 4 asks for; and reading a large
+existing workflow set, when the user asked what their workflows do rather than for a new
+one. Give every capture agent the harvested CRM vocabulary up front, or each invents its
+own phrasing for the same field and the prompts end up disagreeing with each other.
+
+**What stays serial.** Anything driving a shared browser: two agents reading provider
+pages through one browser fight over the same tab — one navigates while the other
+screenshots, and the capture silently belongs to the wrong automation. Read provider
+pages one at a time, from one place. That's the usual case for a migration, and it's why
+capture is the one stage that generally doesn't parallelize. The other is the user's
+approval — everything fans out after step 7's go-ahead, never before.
+
+### Reading what already exists
+
 Reading existing workflows with `list_workflows` / `get_workflow` is the one reliable
 way to see what this account actually supports. Two `event_call_logged` drafts with
 `phone_call_trigger_ids` populated is real evidence about dispositions; a table in a
 reference file is not. Prefer the evidence.
+
+**Ignore archived workflows everywhere in this skill.** An archived workflow is retained
+for history and can't run, so it's evidence about what the account used to do, not what
+it does — the sequences, lists, dispositions, and CRM fields in it may be long gone.
+`list_workflows` takes a single `status`, so it can't filter a status *out*: leave
+`status` unset and drop every row whose `status` is `archived` before you use the list
+for anything — the duplicate check, the CRM harvest, or a summary shown to the user.
+Only bring one up if the user asks about it by name, and say it's archived when you do.
 
 ### Steps
 
@@ -124,7 +175,8 @@ reference file is not. Prefer the evidence.
    go to step 5 — steps 2-4 are migration-only. If they're pointing at an automation that already exists somewhere
    else, read the matching file in `references/` first —
    [outreach.md](references/outreach.md), [salesloft.md](references/salesloft.md),
-   [apollo.md](references/apollo.md). For a provider with no reference file, follow
+   [apollo.md](references/apollo.md), [hubspot.md](references/hubspot.md). For a
+   provider with no reference file, follow
    [references/README.md](references/README.md).
 
 2. **Confirm access to the source** (migration only), in this order. Stop at the
@@ -155,6 +207,16 @@ reference file is not. Prefer the evidence.
       If a name matches several entries, matches none, or the list isn't reachable,
       **ask the user for the URL** — a name alone is not a match.
 
+    **One source automation isn't always one row.** Where the source is a branching
+    canvas rather than a flat rule — HubSpot workflows and journeys, most obviously —
+    each root-to-end path through the branches is its own
+    trigger-plus-conditions-plus-actions automation, and becomes its own Amplemarket
+    workflow with the branch conditions folded into its audience filters. Enumerate the
+    paths at scope time and give each one a row sharing the source URL, so the user sees
+    upfront that one workflow they maintain is becoming several, and so the count against
+    the daily generation limit is honest. The provider's reference file says whether this
+    applies.
+
     **Migration scope — [provider]**
 
     | # | Automation | URL | Decision |
@@ -162,10 +224,11 @@ reference file is not. Prefer the evidence.
     | 1 | [name as the provider shows it] | [direct URL] | Migrate |
     | 2 | [name] | [URL] | Skip — [reason] |
 
-    Migrate one at a time, in the order of that table, running steps 4-10 per
-    automation. One source automation is one `create_workflow` call, and each call
-    counts against the daily limit — so if the set is bigger than what's left today,
-    say so upfront and agree where to stop rather than discovering it mid-run.
+    Run steps 4-10 across the whole table rather than one automation at a time — see
+    [Concurrency](#concurrency) for what batches and what doesn't. One source automation
+    is one `create_workflow` call, so if the set is bigger than what's left of the daily
+    limit today, agree where to stop now: the batch fires before any of it reports back,
+    so there's no mid-run moment to catch it.
 
 4. **Capture the source** (migration only). Each reference names the parts to
    extract. Take values verbatim, including condition values and action scopes,
@@ -178,17 +241,26 @@ reference file is not. Prefer the evidence.
    `Lead_Status__c` in Salesforce" is a capture. "`update_crm_fields`" is a guess.
 
 5. **Check what already exists.** Call `list_workflows` with a `name` filter on a
-   distinctive word from the request. If something close is already there, call
-   `get_workflow` on it and ask the user whether they want a new workflow or an
-   edit to that one — this skill can only create, so an edit is a dashboard task.
-   An existing workflow is also the best evidence of how this account phrases things,
-   and of which trigger settings it actually has configured.
+   distinctive word from the request, and **discard the archived rows before you read
+   any of them** — an archived match isn't a duplicate, and offering to edit one sends
+   the user somewhere dead. If
+   something close is still live, call `get_workflow` on it and ask the user whether
+   they want a new workflow or an edit to that one — this skill can only create, so an
+   edit is a dashboard task. An existing workflow is also the best evidence of how this
+   account phrases things, and of which trigger settings it actually has configured.
+
+   If every match is archived, treat it as nothing existing and carry on, mentioning in
+   one line that a retired workflow covered similar ground — that's context the user may
+   want, but it isn't a reason to stop.
 
    **If the source automation writes a field, harvest CRM names here** — call
-   `get_workflow` on several existing workflows, not just the closest match, and read
-   every `update_crm_fields` step and `crm` filter for `field_name`, `field_type`, and
-   the picklist values in use. This is the step that decides whether the generation
-   succeeds; see [CRM fields are the one thing to resolve first](#crm-fields-are-the-one-thing-to-resolve-first).
+   `get_workflow` on several existing non-archived workflows, not just the closest
+   match, and read every `update_crm_fields` step and `crm` filter for `field_name`,
+   `field_type`, and the picklist values in use. Send those `get_workflow` calls in one
+   message, and when migrating a set do this **once for the whole scope table** rather
+   than per automation — it's the same account either way, and one harvest is what keeps
+   every prompt in the set spelling the field the same way. This is the step that decides
+   whether the generation succeeds; see [CRM fields are the one thing to resolve first](#crm-fields-are-the-one-thing-to-resolve-first).
 
 6. **Write the prompt.** One short paragraph of plain English, phrased as a user
    would phrase it, naming concrete resources (sequence names, list names,
@@ -250,21 +322,35 @@ reference file is not. Prefer the evidence.
 
     Then ask whether to create it. For a fresh build with no source, drop the source
     URL and the Source column, and skip the loss report — there's nothing being left
-    behind. When migrating a set, one plan per automation — never a merged plan
-    covering several, since each one becomes its own workflow and the user approves
-    them one at a time.
+    behind. When migrating a set, one plan block per automation — never a merged plan
+    covering several, since each one becomes its own workflow — but present the blocks
+    together in one message and ask for a single go-ahead covering the batch. The user
+    still reads and approves each plan; what they no longer do is wait for one generation
+    to finish before seeing the next plan. If they approve some and not others, create
+    exactly the approved ones.
 
-8. **Create.** Call `create_workflow` with the approved `prompt`. It returns
-   `{id, status: "planning", message}`. Keep that `id` — it's the creation-request
-   ID, not a workflow ID.
+8. **Create.** Call `create_workflow` with each approved `prompt`. Every call returns
+   `{id, status: "planning", message}`. Keep those `id`s — each is a creation-request
+   ID, not a workflow ID, and it's what step 9 polls.
 
-9. **Poll.** Wait at least 30 seconds, then call `get_workflow_creation` with that
-   `id`. While `status` is `planning` or `generating`, wait another 30 seconds and
-   poll again. Say you're waiting rather than going silent.
+   With a batch, send every approved prompt in one message rather than one per turn, and
+   pair each returned `id` back to the automation it came from before doing anything
+   else — the responses carry no name or source URL, and an unlabelled `id` is a report
+   you can't write. If one call comes back with the daily-limit error, the rest of the
+   batch may well have landed: say which ones did, and hold the others until the limit
+   resets instead of retrying them now.
+
+9. **Poll.** Wait at least 15 seconds, then call `get_workflow_creation` on every
+   outstanding `id` in a single message. Drop every `id` that came back terminal, and
+   while any is still `planning` or `generating`, wait another 15 seconds and poll
+   whatever is left. Repeat until nothing is outstanding. Say what you're waiting on and
+   how many are still going rather than going silent — a batch takes as long as its
+   slowest member, not the sum of all of them.
 
 10. **Report the result.** Read `status` first, then `outcome`. On `completed`, call
     `get_workflow` with `workflow_id` so the summary describes the draft that exists
-    rather than the one you asked for. Report in this format:
+    rather than the one you asked for. Batch those reads too, and give each workflow its
+    own table. Report in this format:
 
     **Workflow created — [name]** (or **Workflow creation failed**)
 
@@ -373,7 +459,8 @@ in the prompt and let the planner resolve it rather than inventing names.
 
 **What the skill does:**
 
-1. Calls `list_workflows` with `name: "repl"` — nothing similar exists.
+1. Calls `list_workflows` with `name: "repl"` — one hit, and it's archived, so it's
+   discarded: nothing live is similar.
 2. Calls `list_lead_lists` to confirm "Warm replies" is the exact list name. This is
    the one kind of pre-checking that pays: the planner can't invent a list that
    doesn't exist.
@@ -383,7 +470,7 @@ in the prompt and let the planner resolve it rather than inventing names.
    > When a contact replies to an email, mark all of their active sequences as
    > finished and add them to the "Warm replies" lead list. Enroll each contact once.
 
-4. Calls `create_workflow`, waits 30 seconds, polls `get_workflow_creation` until
+4. Calls `create_workflow`, waits 15 seconds, polls `get_workflow_creation` until
    `status: "completed"`, `outcome: "doable"`.
 5. Calls `get_workflow` on `workflow_id` and reports in the step 10 format: the
    trigger and steps the planner actually chose, `workflow_url`, and the draft state.
@@ -398,8 +485,9 @@ in the prompt and let the planner resolve it rather than inventing names.
 Person Stage syncs anywhere, and won't be asked — the account's workflows answer it.
 
 **What the skill does:** reads [salesloft.md](references/salesloft.md), notes it's
-working from a screenshot, and harvests. `get_workflow` on four existing
-`event_call_logged` workflows yields the account's CRM vocabulary:
+working from a screenshot, and harvests. `list_workflows` returns five
+`event_call_logged` workflows; one is archived and is dropped without being read, and
+`get_workflow` on the remaining four yields the account's CRM vocabulary:
 
 | Field | Used as | Values |
 | --- | --- | --- |
@@ -474,13 +562,15 @@ open question — not in the loss report, and not silently resolved by the skill
 | "Only account admins can create workflows." | The connected user isn't an admin. Someone with an admin role has to run the creation, or build it in the dashboard. |
 | "AI-assisted workflows are not enabled for this user." | The `ai_assisted_workflows` rollout is off for that user. Don't retry; it needs enabling first. |
 | Daily creation limit reached | The error names the limit and the reset time. Stop creating — batch the remaining migrations for after the reset rather than burning retries. |
-| `get_workflow_creation` still says `generating` after several polls | Normal for complex requests. Keep 30-second gaps between polls and keep the user posted; don't start a second `create_workflow` for the same request. |
+| `get_workflow_creation` still says `generating` after several polls | Normal for complex requests. Keep 15-second gaps between polls and keep the user posted; don't start a second `create_workflow` for the same request. |
 | `outcome: "impossible"` | The planner rejected the plan and `failure_reason` explains which steps blocked it. Treat that as the definitive answer about Amplemarket's capabilities — **unless the blocked step is only about a CRM field or a missing CRM connection**, see the next row. Cut the request to its supported core and try once more, rather than rewording the same ask. |
 | `impossible` blamed on a CRM field or on the account having no CRM | That's a planner bug, not a capability limit — an unmatched field and an unconnected CRM are both supposed to come back as `needs_configuration` with the field deferred. Report it. Then retry with a field name harvested from the account's own workflows, or with the field described by meaning, and tell the user what's actually blocked rather than "Amplemarket can't do it". |
 | The harvested field names don't obviously match the source's | Match on meaning, not spelling — they differ by a word more often than they're absent, and one source field frequently splits into two (a status plus a reason). If two candidates fit and they imply different owners — one the workflows write, one only read — that's a question for the user, not a coin flip. |
 | `outcome: "needs_configuration"` | Expected whenever a step has editor-owned settings — webhook and HTTP steps, CRM field mappings, disposition and tag selection. Report `affected_steps` as editor tasks; don't treat it as a failure. |
-| You're unsure whether Amplemarket supports something | Don't guess in either direction, and don't answer from a reference file. Check `list_workflows` / `get_workflow` for an existing workflow that does it, or describe it in the prompt and let the planner rule. A wrong "it's not supported" costs more than a wasted generation. |
+| You're unsure whether Amplemarket supports something | Don't guess in either direction, and don't answer from a reference file. Check `list_workflows` / `get_workflow` for a non-archived workflow that does it, or describe it in the prompt and let the planner rule. A wrong "it's not supported" costs more than a wasted generation. |
+| The only workflow that does the thing you're checking is archived | It's weak evidence — the catalogue may have moved on since it was retired, and a field or disposition it names may be gone. Don't quote it as proof and don't harvest field names from it; describe the behaviour in the prompt and let the planner rule on it instead. |
 | The generated draft doesn't match the intent | Read it with `get_workflow`, name the specific divergence, and create a new one from a sharper prompt. There's no edit tool — fixes are either a fresh generation or dashboard edits. |
 | The planner built something the reference file said was impossible | The reference is stale. Trust the planner, tell the user, and fix the reference file — it's a provider file asserting something about Amplemarket, which it shouldn't be doing in the first place. |
-| The source automation is pure CRM-sync or record-creation housekeeping | It isn't outreach automation and usually has no workflow form at all. Recommend leaving it in the source tool or rebuilding it in the CRM, rather than producing a workflow that does the leftover half. |
+| Two capture agents came back with the same automation | A shared browser has one active tab, so parallel reads overwrite each other's navigation. Discard both captures — there's no way to tell which agent got which — and re-read the automations one at a time from a single place. |
+| The source automation is record-shaped rather than person-shaped | Deal, ticket, quote, invoice, and subscription automations have no contact to enroll, and pure CRM-sync or record-creation housekeeping isn't outreach automation at all. Recommend leaving it in the source tool or rebuilding it in the CRM, rather than producing a workflow that does the leftover half. |
 | A referenced sequence or list can't be found | Resolve names with `list_sequences` / `list_lead_lists` before creating. If it doesn't exist yet, create it first — the planner can't invent a resource that isn't there. |

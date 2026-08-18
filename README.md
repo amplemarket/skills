@@ -66,7 +66,7 @@ After installation, Amplemarket skills are available under the plugin namespace,
 | stale-opportunity-reviver | Revive stale deals with fresh research and outreach plans |
 | team-performance-review | Compare rep performance with leaderboard format |
 | torpedo | Break into target accounts with deep research, strategic angles, and personalized sequences |
-| workflow-migration | Create Amplemarket workflows from natural language, or migrate Outreach / Salesloft / Apollo automations |
+| workflow-migration | Create Amplemarket workflows from natural language, or migrate Outreach / Salesloft / Apollo / HubSpot automations |
 
 ## Contributing
 

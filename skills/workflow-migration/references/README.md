@@ -16,6 +16,7 @@ section in SKILL.md for why this rule exists and what it cost when it was broken
 | Outreach | Triggers (Administration → Workflow automations) | [outreach.md](outreach.md) |
 | Salesloft | Automation Rules (Settings → Automation Rules) | [salesloft.md](salesloft.md) |
 | Apollo | Workflows and Plays | [apollo.md](apollo.md) |
+| HubSpot | Workflows and Journeys (Automation → Workflows) | [hubspot.md](hubspot.md) |
 
 Each file ends with the vendor documentation it was written from. When a provider ships
 UI changes, re-read those sources before trusting a description.
@@ -31,7 +32,10 @@ Work from the source automation in front of you:
    descriptions that read fine and don't exist.
 2. **Decompose it into the five parts every one of these tools has** — the event that
    fires it, what it acts on (person vs company), whether it can re-fire for the same
-   target, the conditions that gate it, and the ordered actions it runs.
+   target, the conditions that gate it, and the ordered actions it runs. If the source is
+   a canvas rather than a form the actions may branch, and each root-to-end path is its
+   own automation — step 3 of [SKILL.md](../SKILL.md) covers how that changes the scope
+   table, and [hubspot.md](hubspot.md) shows what the branch types look like in practice.
 3. **Describe each part in plain English**, capturing configured values verbatim.
    Don't decide what it maps to; that's `create_workflow`'s job, and it has the
    catalogue.
@@ -55,8 +59,8 @@ rather than asking the user to retype it — read-tier browser access is enough.
 screenshot or pasted text works as a fallback.
 
 Each file's **Where to read it** section says whether the URLs are known. Only
-Outreach's are hardcoded here; for the others, ask the user for the link to their
-automations list and for the URL of each automation to migrate. Pin every automation
+Outreach's and HubSpot's are hardcoded here; for the others, ask the user for the link
+to their automations list and for the URL of each automation to migrate. Pin every automation
 in the set to exactly one URL before capturing it — a name is not an identifier, and
 step 3 of the skill won't let capture start without one.
 
