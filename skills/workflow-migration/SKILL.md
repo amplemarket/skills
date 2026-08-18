@@ -6,7 +6,7 @@ metadata:
   author: amplemarket
   version: "3.2.0"
   category: "Workflows"
-compatibility: Requires the Amplemarket MCP server; migrations also need a browser tool that can read authenticated pages
+compatibility: Requires the Amplemarket MCP server with beta tools enabled; migrations also need a browser tool that can read authenticated pages
 ---
 
 # Workflow Migration
@@ -98,7 +98,7 @@ working around it silently.
 
 | Requirement | Needed for | If it's missing |
 | --- | --- | --- |
-| **Amplemarket MCP** with the workflow tools | Everything | If `create_workflow` isn't in the tool list, try `get_more_tools`; if it's still absent, tell the user to enable the Amplemarket connector. Nothing in this skill works without it. |
+| **Amplemarket MCP**, with **beta tools** enabled | Everything | The four workflow tools are beta-gated. If `create_workflow` isn't in the tool list, try `get_more_tools`; if it's still absent, tell the user to enable the Amplemarket connector and opt into beta tools. Nothing in this skill works without it. |
 | An **admin** Amplemarket user with the `ai_assisted_workflows` rollout | Creating | Reading workflows still works. Creation returns a specific error — surface it and stop; it needs an admin or an enablement, not a retry. |
 | A **browser tool that can read authenticated pages** (Claude in Chrome: `read_page`, `screenshot`) | Migration only | Provider admin pages sit behind a login, so `WebFetch` and `WebSearch` can't reach them. Fall back to screenshots or pasted text from the user. |
 | An **active provider login** in that browser | Migration only | Ask the user to log in themselves and say when they're done. Never attempt to authenticate, and never ask for credentials. |
@@ -119,8 +119,9 @@ they may be exposed prefixed, e.g. `mcp__claude_ai_Amplemarket__create_workflow`
 | `create_workflow` | Start creation from a `prompt`. Returns an ID immediately; generation is asynchronous. |
 | `get_workflow_creation` | Poll that ID until the request reaches a terminal state. |
 
-`list_sequences` and `list_lead_lists` are useful alongside them for resolving
-sequence and list names the workflow will reference.
+All four are **beta** tools — a client that hasn't opted into beta tools won't see
+them at all. `list_sequences` and `list_lead_lists` are useful alongside them for
+resolving sequence and list names the workflow will reference.
 
 ### Concurrency
 
@@ -209,13 +210,19 @@ Only bring one up if the user asks about it by name, and say it's archived when 
 
     **One source automation isn't always one row.** Where the source is a branching
     canvas rather than a flat rule — HubSpot workflows and journeys, most obviously —
-    each root-to-end path through the branches is its own
-    trigger-plus-conditions-plus-actions automation, and becomes its own Amplemarket
-    workflow with the branch conditions folded into its audience filters. Enumerate the
-    paths at scope time and give each one a row sharing the source URL, so the user sees
-    upfront that one workflow they maintain is becoming several, and so the count against
-    the daily generation limit is honest. The provider's reference file says whether this
-    applies.
+    enumerate the root-to-end paths at scope time and give each one a row sharing the
+    source URL, so the user sees upfront that one workflow they maintain is becoming
+    several and the count against the daily generation limit is honest.
+
+    Splitting works when the branch is decided **on the record as it enrolls** — a
+    property, a segment, a firmographic — because that condition folds into the path's
+    audience filters and gets asked the same question at the same moment. It does *not*
+    work for a branch on state the automation itself produces mid-run (a field set by an
+    earlier step, a wait-for-event that resolves per record) or for a random percentage
+    split: those aren't conditions on the contact at all, and folding them into filters
+    moves the decision to enrollment time and sends contacts down the wrong path. Don't
+    split those — describe the whole thing and let the planner rule, then report whatever
+    it can't hold. The provider's reference file says which shapes it has.
 
     **Migration scope — [provider]**
 
@@ -447,9 +454,10 @@ actions, filters, and fields exist — is intentionally **not** listed here.
 - **`get_workflow` redacts on purpose.** Request headers and captured test response
   bodies are stripped; you get header *names* only. Don't try to route around that.
 
-The catalogue drifts, so treat the vocabulary above as a guide rather than a
-contract. When you're unsure whether a field or trigger exists, describe the intent
-in the prompt and let the planner resolve it rather than inventing names.
+If you need the current catalogue for some other reason — writing tooling, auditing
+drift — it lives in `src/services/workflows/definitions/` (`enums/`, `catalogue/`) and
+`src/services/workflows/workflow_planner/`, and the `workflow-context-audit` skill
+covers reading it. You do not need it to write a prompt.
 
 ## Examples
 
@@ -554,7 +562,7 @@ open question — not in the loss report, and not silently resolved by the skill
 
 | Problem | Solution |
 | --- | --- |
-| Workflow tools aren't available | Try `get_more_tools`. If they're still missing, the Amplemarket connector isn't enabled for this client — nothing in this skill can create without them. |
+| Workflow tools aren't available | They're all beta. The client has to opt into beta tools; also try `get_more_tools`. Without beta access this skill can't create anything. |
 | No browser tool is connected | Reading provider admin pages needs one — `WebFetch` and `WebSearch` can't get past the login. Ask the user for screenshots or the automation's configuration as text, and say you're working from a paste so they know what you can't see. |
 | The provider page shows a login or SSO screen | The session isn't live. Ask the user to log in in their own browser and tell you when to retry. Never attempt to authenticate and never ask for credentials. |
 | The automations list isn't where the reference says | Providers move these pages. Ask the user for the URL of the list, or of the specific automations to migrate, and note the drift so the reference can be corrected. |

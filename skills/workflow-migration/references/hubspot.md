@@ -86,15 +86,19 @@ HubSpot offers two kinds, and they mean genuinely different things.
 record — `Lifecycle stage is any of "Marketing Qualified Lead"`, `Country is any of
 "United States"`, segment membership, form submitted, page viewed, marketing email
 clicked, ad interacted with, privacy consent status, import source, activity on
-another workflow. A record enrolls the first time it starts matching. Because it's a
-condition rather than an event, **switching the workflow on enrolls the entire back
-catalogue of records that already match** — which is why a freshly activated HubSpot
-workflow can fire on thousands of contacts at once. If the user is relying on that
-backfill, say so, because it's a property of turning a filter workflow on, not of the
-automation's logic.
+another workflow. A record enrolls the first time it starts matching.
+
+The part that catches people: **whether the back catalogue enrolls is a choice made when
+the workflow is switched on**, not a property of the trigger. HubSpot's default is to
+enroll only records that start matching afterwards; activating with "enroll existing
+records which meet the trigger criteria as of now" ticked instead sweeps in everyone who
+already matches, which can be thousands at once. That choice isn't stored on the canvas,
+so ask the user which way the source was turned on — it separates a workflow that has
+already processed the whole database from one that has only ever seen new matches.
 
 **Event triggers** ("when an event occurs") fire on the occurrence itself and **only
-count occurrences after the workflow was turned on** — no backfill, ever. HubSpot lists
+count occurrences after the workflow was turned on** — no backfill, and no option to ask
+for one. HubSpot lists
 over sixty of them across ads, calls, CRM changes, custom events, email, forms,
 meetings, sequences, SMS, and website activity. Any additional filters attached to an
 event trigger are evaluated only at the instant the event fires, which is stricter than
@@ -209,9 +213,12 @@ whose absence gets noticed the same afternoon.
 - **Marketing email sends.** The largest one by far. The emails stop going out from
   HubSpot, so the subscription types, the legal-basis gating, and every email
   performance report keyed to those sends go with them. Name the emails.
-- **Suppression segments and goal criteria.** Both are *exclusions*. Losing either
-  means the migrated workflow touches strictly more people than the original — customers
-  and competitors it used to skip, and converters it used to release.
+- **Suppression segments and goal criteria.** Both are *exclusions*, and both belong in
+  the prompt described by meaning — never dropped on the assumption they won't survive.
+  What doesn't travel is that HubSpot re-checks them continuously and ejects records
+  mid-run; an enrollment-time filter only decides at the door. Whatever isn't reproduced
+  means the workflow touches strictly more people than the original — customers and
+  competitors it used to skip, converters it used to release.
 - **The branch structure.** If one workflow became three, say so plainly and say which
   path each one covers, because from now on the user maintains three things that used to
   be edited in one place.
@@ -246,18 +253,25 @@ two generations. Row 1, the enterprise path:
 > When a contact's lifecycle stage becomes Marketing Qualified Lead, set their CRM lead
 > status field to "New" and add them to the "Enterprise MQL follow-up" sequence. Only
 > apply this to contacts in the United States or Canada whose company has more than 500
-> employees. Enroll each contact once.
+> employees, and don't enroll anyone who is already a customer. Enroll each contact once.
 
 Row 2 is the same prompt with 500 or fewer employees and the "SMB MQL follow-up"
-sequence. Note what the prompt does *not* carry: the owner rotation, the internal
-notification, and the suppression segment. Those are the loss report.
+sequence.
+
+Note that the suppression segment **is** in the prompt, described by what it does rather
+than by its name. Leaving an exclusion out because it looks unsupported is the mistake
+[SKILL.md](../SKILL.md) opens by warning about, and it's the expensive direction to get
+wrong: a dropped exclusion produces a draft that enrolls the exact people the source was
+built to skip. Describe it and let the planner rule. What the prompt genuinely doesn't
+carry is the owner rotation and the internal notification.
 
 **What you lose by moving this**
 
-- Suppression segment "Existing customers" — the migrated workflows have no equivalent
-  exclusion — customers who reach MQL now get enrolled, which is exactly the group the
-  original was built to skip. Rebuild it as an audience filter or an exclusion list
-  before activating.
+- Suppression segment "Existing customers" — the prompt asks for the exclusion, but
+  HubSpot was evaluating live membership of a maintained segment and pulling already-
+  enrolled contacts back out the moment they joined it — an enrollment-time condition
+  can't do that second half. Agree what defines "already a customer" on this side, and
+  check the draft actually carries the exclusion before activating.
 - SDR round-robin assignment — records land unassigned instead of rotating across the
   team — decide who owns them, because it's the change the team notices the same day.
 - Internal email to the contact owner — nobody gets notified on handoff — rebuild it as
