@@ -27,7 +27,8 @@ The minimum input is a company name, domain, or LinkedIn URL. The skill handles 
 - `search_companies` — find companies by criteria
 - `enrich_company` — firmographics, tech stack, funding, headcount, description
 - `list_accounts` — find accounts by owner, domain, name
-- `get_account` — existing account record: engagement stats, CRM-synced data, AI-generated insights
+- `get_account` — existing account record: engagement stats, CRM-synced data, AI-generated activity summary, and a Research Intelligence summary (`research_status`, `research_relevance`, `research_summary`) when one exists
+- `get_account_research` — full Research Intelligence for an account: AI-researched summary, relevance rating, and signals (funding, hiring, new decision-makers, news, strategic initiatives, first-party engagement) with sources. Read-only; research runs are started from the Amplemarket dashboard
 - `list_contacts` / `get_contact`  — existing contact records with interaction history
 - `get_industries` / `get_job_functions` — valid enum values for search filters
 - `list_company_job_openings` / `get_company_job_opening` — find job openings for a company
@@ -58,13 +59,13 @@ If the user hasn't already shared this in the conversation, ask them for their c
 Build a rich picture of the target account across four dimensions (go really deep here, don't be lazy, all steps are mandatory):
 
 **Existing state** — Where do we stand with this account today?
-Check Amplemarket for existing account records, past engagement, mapped contacts, AI-generated insights, and CRM-synced data. Check CRM directly if connected. Understand: is this net-new or re-engagement? Who have we talked to? What happened? What intel do we already have?
+Check Amplemarket for existing account records, past engagement, mapped contacts, the AI-generated activity summary, and CRM-synced data. If `get_account` reports a `research_status` other than `none`, call `get_account_research` — its signals and summary are the richest intel Amplemarket has on the account, so start from them before researching from scratch. Check CRM directly if connected. Understand: is this net-new or re-engagement? Who have we talked to? What happened? What intel do we already have?
 
 **Company intelligence** — Who are they and what do they care about?
 Enrich the company and run deep web search. Understand their business model, product, market position, customers, strategic priorities, and current challenges. This is the foundation for finding angles.
 
 **Signals & timing** — Why reach out now?
-Search for recent events that create openings: job postings (reveal investment areas, internal priorities, tools in use, growth direction), funding, leadership changes, product launches, news, public reports (10-Ks for public companies), LinkedIn company activity (recent posts, engagement trends, content themes, etc.), and any other relevant signals you think might be relevant. The "why now" makes outreach timely and relevant. Always combine both web search and the tools to find job postings. 
+Search for recent events that create openings: job postings (reveal investment areas, internal priorities, tools in use, growth direction), funding, leadership changes, product launches, news, public reports (10-Ks for public companies), LinkedIn company activity (recent posts, engagement trends, content themes, etc.), and any other relevant signals you think might be relevant. The "why now" makes outreach timely and relevant. Research Intelligence signals from `get_account_research` are already categorized and sourced — use them as the starting point and fill gaps with web search. Follow sources with a `contact_public_id` via `get_contact`. Always combine both web search and the tools to find job postings. 
 
 **People** — Who matters and who could open the door?
 Map the org chart around the personas the user targets. Identify the likely buying committee. Cross-reference with existing contacts and past conversations — people we've already engaged are especially important context. Note tenure, recent role changes, new joiners. When searching, prefer filtering by department over specific titles or keywords (the keywords filter only searches the prospect's LinkedIn About section) — it casts a wider net and catches people with non-standard titles. Use larger page sizes (like 30+ or 50+) when mapping orgs, especially for bigger companies (can also use the seniority filter if needed).
